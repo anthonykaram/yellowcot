@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Yellowcot
+GenericName=Flash Card Simulator
+Icon=/usr/share/yellowcot/yellowcot.svg
+Type=Application
+Categories=Education
+Exec=yellowcot
