@@ -1,7 +1,7 @@
 /*
-	Yellowcot 1.1.14, released 2010-08-09
+	Yellowcot 1.1.15, released 2011-01-22
 
-	Copyleft 2010 Anthony Karam Karam
+	Copyleft 2011 Anthony Karam Karam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #include <cstdlib>
 #include <sys/time.h>
 
-#define VERSION "1.1.14"
+#define VERSION "1.1.15"
 #define STRLEN 1000
 #define MINWIDTH 500
 #define MINHEIGHT 300
@@ -87,16 +87,30 @@ class YCQuiz : public QWidget {
 		void insertARow() {
 			int i = editTable->currentRow();
 			editTable->insertRow(i);
+
+			//add question cells
 			editTable->setCellWidget(i, 0, new QComboBox);
 			qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->addItem(QString::fromUtf8("text"));
 			qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->addItem(QString::fromUtf8("image"));
 			QTableWidgetItem *cell1 = new QTableWidgetItem();
 			editTable->setItem(i, 1, cell1);
-			editTable->setCellWidget(i, 2, new QComboBox);
-			qobject_cast<QComboBox*>(editTable->cellWidget(i, 2))->addItem(QString::fromUtf8("text"));
-			qobject_cast<QComboBox*>(editTable->cellWidget(i, 2))->addItem(QString::fromUtf8("image"));
+			QTableWidgetItem *cell2 = new QTableWidgetItem();
+			editTable->setItem(i, 2, cell2);
 			QTableWidgetItem *cell3 = new QTableWidgetItem();
 			editTable->setItem(i, 3, cell3);
+
+			//add answer cells
+			editTable->setCellWidget(i, 4, new QComboBox);
+			qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->addItem(QString::fromUtf8("text"));
+			qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->addItem(QString::fromUtf8("image"));
+			QTableWidgetItem *cell5 = new QTableWidgetItem();
+			editTable->setItem(i, 5, cell5);
+			QTableWidgetItem *cell6 = new QTableWidgetItem();
+			editTable->setItem(i, 6, cell6);
+			QTableWidgetItem *cell7 = new QTableWidgetItem();
+			editTable->setItem(i, 7, cell7);
+
+			//set current cell
 			editTable->setCurrentCell(editTable->currentRow() - 1, editTable->currentColumn());
 		}
 		void removeARow() {
@@ -112,44 +126,96 @@ class YCQuiz : public QWidget {
 		void moveTheRowUp() {
 			int i = editTable->currentRow();
 			if (i != -1 && i && editTable->rowCount() > 1) {
-				int col1, col3;
-				char str2[STRLEN], str4[STRLEN];
+
+				//make/prepare variables
+				int col1, col5;
+				char str2[STRLEN], str3[STRLEN], str4[STRLEN], str6[STRLEN], str7[STRLEN], str8[STRLEN];
 				memset(str2, 0, STRLEN);
+				memset(str3, 0, STRLEN);
 				memset(str4, 0, STRLEN);
+				memset(str6, 0, STRLEN);
+				memset(str7, 0, STRLEN);
+				memset(str8, 0, STRLEN);
+
+				//record data in row
 				col1 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->currentIndex();
 				sprintf(str2, editTable->item(i, 1)->text().toUtf8().data());
-				col3 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 2))->currentIndex();
+				sprintf(str3, editTable->item(i, 2)->text().toUtf8().data());
 				sprintf(str4, editTable->item(i, 3)->text().toUtf8().data());
+				col5 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->currentIndex();
+				sprintf(str6, editTable->item(i, 5)->text().toUtf8().data());
+				sprintf(str7, editTable->item(i, 6)->text().toUtf8().data());
+				sprintf(str8, editTable->item(i, 7)->text().toUtf8().data());
+
+				//overwrite row with data from row above
 				qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 0))->currentIndex());
 				editTable->item(i, 1)->setText(editTable->item(i-1, 1)->text());
-				qobject_cast<QComboBox*>(editTable->cellWidget(i, 2))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 2))->currentIndex());
+				editTable->item(i, 2)->setText(editTable->item(i-1, 2)->text());
 				editTable->item(i, 3)->setText(editTable->item(i-1, 3)->text());
+				qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 4))->currentIndex());
+				editTable->item(i, 5)->setText(editTable->item(i-1, 5)->text());
+				editTable->item(i, 6)->setText(editTable->item(i-1, 6)->text());
+				editTable->item(i, 7)->setText(editTable->item(i-1, 7)->text());
+
+				//write data from variables into row above
 				qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 0))->setCurrentIndex(col1);
 				editTable->item(i-1, 1)->setText(QString::fromUtf8(str2));
-				qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 2))->setCurrentIndex(col3);
+				editTable->item(i-1, 2)->setText(QString::fromUtf8(str3));
 				editTable->item(i-1, 3)->setText(QString::fromUtf8(str4));
+				qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 4))->setCurrentIndex(col5);
+				editTable->item(i-1, 5)->setText(QString::fromUtf8(str6));
+				editTable->item(i-1, 6)->setText(QString::fromUtf8(str7));
+				editTable->item(i-1, 7)->setText(QString::fromUtf8(str8));
+
+				//set current cell to row above
 				editTable->setCurrentCell(i-1, editTable->currentColumn());
 			}
 		}
 		void moveTheRowDown() {
 			int i = editTable->currentRow();
 			if (i != -1 && i != editTable->rowCount() - 1) {
-				int col1, col3;
-				char str2[STRLEN], str4[STRLEN];
+
+				//make/prepare variables
+				int col1, col5;
+				char str2[STRLEN], str3[STRLEN], str4[STRLEN], str6[STRLEN], str7[STRLEN], str8[STRLEN];
 				memset(str2, 0, STRLEN);
+				memset(str3, 0, STRLEN);
 				memset(str4, 0, STRLEN);
+				memset(str6, 0, STRLEN);
+				memset(str7, 0, STRLEN);
+				memset(str8, 0, STRLEN);
+
+				//record data in row
 				col1 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->currentIndex();
 				sprintf(str2, editTable->item(i, 1)->text().toUtf8().data());
-				col3 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 2))->currentIndex();
+				sprintf(str3, editTable->item(i, 2)->text().toUtf8().data());
 				sprintf(str4, editTable->item(i, 3)->text().toUtf8().data());
+				col5 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->currentIndex();
+				sprintf(str6, editTable->item(i, 5)->text().toUtf8().data());
+				sprintf(str7, editTable->item(i, 6)->text().toUtf8().data());
+				sprintf(str8, editTable->item(i, 7)->text().toUtf8().data());
+
+				//overwrite row with data from row below
 				qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i+1, 0))->currentIndex());
 				editTable->item(i, 1)->setText(editTable->item(i+1, 1)->text());
-				qobject_cast<QComboBox*>(editTable->cellWidget(i, 2))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i+1, 2))->currentIndex());
+				editTable->item(i, 2)->setText(editTable->item(i+1, 2)->text());
 				editTable->item(i, 3)->setText(editTable->item(i+1, 3)->text());
+				qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i+1, 4))->currentIndex());
+				editTable->item(i, 5)->setText(editTable->item(i+1, 5)->text());
+				editTable->item(i, 6)->setText(editTable->item(i+1, 6)->text());
+				editTable->item(i, 7)->setText(editTable->item(i+1, 7)->text());
+
+				//write data from variables into row below
 				qobject_cast<QComboBox*>(editTable->cellWidget(i+1, 0))->setCurrentIndex(col1);
 				editTable->item(i+1, 1)->setText(QString::fromUtf8(str2));
-				qobject_cast<QComboBox*>(editTable->cellWidget(i+1, 2))->setCurrentIndex(col3);
+				editTable->item(i+1, 2)->setText(QString::fromUtf8(str3));
 				editTable->item(i+1, 3)->setText(QString::fromUtf8(str4));
+				qobject_cast<QComboBox*>(editTable->cellWidget(i+1, 4))->setCurrentIndex(col5);
+				editTable->item(i+1, 5)->setText(QString::fromUtf8(str6));
+				editTable->item(i+1, 6)->setText(QString::fromUtf8(str7));
+				editTable->item(i+1, 7)->setText(QString::fromUtf8(str8));
+
+				//set current cell to row below
 				editTable->setCurrentCell(i+1, editTable->currentColumn());
 			}
 		}
@@ -166,7 +232,11 @@ class YCQuiz : public QWidget {
 				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "a+");
 				fprintf(file, "<quiz>\n");
 				for (i = 0; i < editTable->rowCount(); i++) {
+
+					//begin qa section
 					fprintf(file, "	<qa>\n");
+
+					//store question type and question content
 					if (qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->currentIndex()) {
 						memset(str, 0, STRLEN);
 						sprintf(str, "/var/tmp/yellowcot_quiz/i_backup/%s", (editTable->item(i, 1))->text().toUtf8().data());
@@ -194,33 +264,49 @@ class YCQuiz : public QWidget {
 					}
 					else
 						fprintf(file, "		<q type=\"text\">%s</q>\n", (editTable->item(i, 1))->text().toUtf8().data());
-					if (qobject_cast<QComboBox*>(editTable->cellWidget(i, 2))->currentIndex()) {
+
+					//store question source
+					fprintf(file, "		<qsrc>%s</qsrc>\n", (editTable->item(i, 2))->text().toUtf8().data());
+
+					//store question licence
+					fprintf(file, "		<qlic>%s</qlic>\n", (editTable->item(i, 3))->text().toUtf8().data());
+
+					//store answer type and answer content
+					if (qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->currentIndex()) {
 						memset(str, 0, STRLEN);
-						sprintf(str, "/var/tmp/yellowcot_quiz/i_backup/%s", (editTable->item(i, 3))->text().toUtf8().data());
+						sprintf(str, "/var/tmp/yellowcot_quiz/i_backup/%s", (editTable->item(i, 5))->text().toUtf8().data());
 						if ((file2 = fopen(str, "r"))) {
 							fclose(file2);
 							memset(str, 0, STRLEN);
-							sprintf(str, "cp \"/var/tmp/yellowcot_quiz/i_backup/%s\" /var/tmp/yellowcot_quiz/i/.", (editTable->item(i, 3))->text().toUtf8().data());
+							sprintf(str, "cp \"/var/tmp/yellowcot_quiz/i_backup/%s\" /var/tmp/yellowcot_quiz/i/.", (editTable->item(i, 5))->text().toUtf8().data());
 							system(str);
-							fprintf(file, "		<a type=\"image\">%s</a>\n", (editTable->item(i, 3))->text().toUtf8().data());
+							fprintf(file, "		<a type=\"image\">%s</a>\n", (editTable->item(i, 5))->text().toUtf8().data());
 						}
-						else if ((file2 = fopen((editTable->item(i, 3))->text().toUtf8().data(), "r"))) {
+						else if ((file2 = fopen((editTable->item(i, 5))->text().toUtf8().data(), "r"))) {
 							fclose(file2);
 							memset(str, 0, STRLEN);
-							sprintf(str, "cp \"%s\" /var/tmp/yellowcot_quiz/i/.", (editTable->item(i, 3))->text().toUtf8().data());
+							sprintf(str, "cp \"%s\" /var/tmp/yellowcot_quiz/i/.", (editTable->item(i, 5))->text().toUtf8().data());
 							system(str);
-							extractFileName((editTable->item(i, 3))->text().toUtf8().data(), str);
+							extractFileName((editTable->item(i, 5))->text().toUtf8().data(), str);
 							fprintf(file, "		<a type=\"image\">%s</a>\n", str);
 						}
 						else {
 							memset(str, 0, STRLEN);
-							sprintf(str, "Image not saved because it could not be found: %s", (editTable->item(i, 3))->text().toUtf8().data());
+							sprintf(str, "Image not saved because it could not be found: %s", (editTable->item(i, 5))->text().toUtf8().data());
 							QMessageBox::warning(this, tr("Missing image"), str);
 							fprintf(file, "		<a type=\"text\">(missing image)</a>\n");
 						}
 					}
 					else
-						fprintf(file, "		<a type=\"text\">%s</a>\n", (editTable->item(i, 3))->text().toUtf8().data());
+						fprintf(file, "		<a type=\"text\">%s</a>\n", (editTable->item(i, 5))->text().toUtf8().data());
+
+					//store answer source
+					fprintf(file, "		<asrc>%s</asrc>\n", (editTable->item(i, 6))->text().toUtf8().data());
+
+					//store answer licence
+					fprintf(file, "		<alic>%s</alic>\n", (editTable->item(i, 7))->text().toUtf8().data());
+
+					//end qa section
 					fprintf(file, "	</qa>\n");
 				}
 				system("rm -r /var/tmp/yellowcot_quiz/i_backup");
@@ -366,9 +452,23 @@ class YCQuiz : public QWidget {
 					while (fgets(qOrA, STRLEN, file)) {
 						if (strchr(qOrA, '\n') != NULL)
 							if (extractQOrA(qOrA, croppedStr)) {
+
+								//get q/a type and actual content
 								extractQOrAType(qOrA, qOrAType);
 								questionsAndAnswersList->addItem(QString::fromUtf8(qOrAType), ctr);
 								questionsAndAnswersList->addItem(QString::fromUtf8(croppedStr), ctr);
+
+								//get q/a source
+								fgets(qOrA, STRLEN, file);
+								extractQOrA(qOrA, croppedStr);
+								questionsAndAnswersList->addItem(QString::fromUtf8(croppedStr), ctr);
+
+								//get q/a licence
+								fgets(qOrA, STRLEN, file);
+								extractQOrA(qOrA, croppedStr);
+								questionsAndAnswersList->addItem(QString::fromUtf8(croppedStr), ctr);
+
+								//update q/a counter
 								ctr++;
 							}
 						memset(qOrA, 0, STRLEN);
@@ -385,27 +485,55 @@ class YCQuiz : public QWidget {
 				advanceQorA();
 				editTable->clear();
 				editTable->setRowCount(ctr / 2);
-				editTable->setColumnCount(4);
+				editTable->setColumnCount(8);
 				editTable->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Question Type")));
 				editTable->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Question")));
-				editTable->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Answer Type")));
-				editTable->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Answer")));
+				editTable->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Question Source")));
+				editTable->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Question Licence")));
+				editTable->setHorizontalHeaderItem(4, new QTableWidgetItem(tr("Answer Type")));
+				editTable->setHorizontalHeaderItem(5, new QTableWidgetItem(tr("Answer")));
+				editTable->setHorizontalHeaderItem(6, new QTableWidgetItem(tr("Answer Source")));
+				editTable->setHorizontalHeaderItem(7, new QTableWidgetItem(tr("Answer Licence")));
 				while (ctr > 0) {
-					ctr-= 2;
+					ctr -= 2;
+
+					//populate cell 0 (question type)
 					editTable->setCellWidget(ctr/2, 0, new QComboBox);
 					qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 0))->addItem(QString::fromUtf8("text"));
 					qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 0))->addItem(QString::fromUtf8("image"));
-					if (!QString::compare(questionsAndAnswersList->itemText(ctr*2), QString("image")))
+					if (!QString::compare(questionsAndAnswersList->itemText(ctr*4), QString("image")))
 						qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 0))->setCurrentIndex(1);
-					QTableWidgetItem *cell1 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*2+1).toUtf8().data()));
+
+					//populate cell 1 (question)
+					QTableWidgetItem *cell1 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+1).toUtf8().data()));
 					editTable->setItem(ctr/2, 1, cell1);
-					editTable->setCellWidget(ctr/2, 2, new QComboBox);
-					qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 2))->addItem(QString::fromUtf8("text"));
-					qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 2))->addItem(QString::fromUtf8("image"));
-					if (!QString::compare(questionsAndAnswersList->itemText(ctr*2+2), QString("image")))
-						qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 2))->setCurrentIndex(1);
-					QTableWidgetItem *cell3 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*2+3).toUtf8().data()));
+
+					//populate cell 2 (question source)
+					QTableWidgetItem *cell2 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+2).toUtf8().data()));
+					editTable->setItem(ctr/2, 2, cell2);
+
+					//populate cell 3 (question licence)
+					QTableWidgetItem *cell3 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+3).toUtf8().data()));
 					editTable->setItem(ctr/2, 3, cell3);
+
+					//populate cell 4 (answer type)
+					editTable->setCellWidget(ctr/2, 4, new QComboBox);
+					qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 4))->addItem(QString::fromUtf8("text"));
+					qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 4))->addItem(QString::fromUtf8("image"));
+					if (!QString::compare(questionsAndAnswersList->itemText(ctr*4+4), QString("image")))
+						qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 4))->setCurrentIndex(1);
+
+					//populate cell 5 (answer)
+					QTableWidgetItem *cell5 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+5).toUtf8().data()));
+					editTable->setItem(ctr/2, 5, cell5);
+
+					//populate cell 6 (answer source)
+					QTableWidgetItem *cell6 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+6).toUtf8().data()));
+					editTable->setItem(ctr/2, 6, cell6);
+
+					//populate cell 7 (answer licence)
+					QTableWidgetItem *cell7 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+7).toUtf8().data()));
+					editTable->setItem(ctr/2, 7, cell7);
 				}
 				editTable->resizeColumnsToContents();
 				editTable->resizeRowsToContents();
@@ -469,16 +597,16 @@ class YCQuiz : public QWidget {
 
 			//advance the question/answer
 			if (reversedCheckBox->isChecked()) {
-				if (currentIndex%4 == 3)
-					questionsAndAnswersList->setCurrentIndex(currentIndex - 2);
+				if (currentIndex%8 == 5)
+					questionsAndAnswersList->setCurrentIndex(currentIndex - 4);
 				else
-					questionsAndAnswersList->setCurrentIndex((int)(((double)rand() * (end - start + 1)) / RAND_MAX + start - 1) * 4 + 3);
+					questionsAndAnswersList->setCurrentIndex((int)(((double)rand() * (end - start + 1)) / RAND_MAX + start - 1) * 8 + 5);
 			}
 			else {
-				if (currentIndex%4 == 1)
-					questionsAndAnswersList->setCurrentIndex(currentIndex + 2);
+				if (currentIndex%8 == 1)
+					questionsAndAnswersList->setCurrentIndex(currentIndex + 4);
 				else
-					questionsAndAnswersList->setCurrentIndex((int)(((double)rand() * (end - start + 1)) / RAND_MAX + start - 1) * 4 + 1);
+					questionsAndAnswersList->setCurrentIndex((int)(((double)rand() * (end - start + 1)) / RAND_MAX + start - 1) * 8 + 1);
 			}
 			updateButtonContents();
 		}

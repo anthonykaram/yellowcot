@@ -1,7 +1,7 @@
 /*
-	Yellowcot 1.1.14, released 2010-08-09
+	Yellowcot 1.1.15, released 2011-01-22
 
-	Copyleft 2010 Anthony Karam Karam
+	Copyleft 2011 Anthony Karam Karam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -48,15 +48,23 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	reversedCheckBox->setEnabled(false);
 	editTable = new QTableWidget(this);
 	editTable->setRowCount(0);
-	editTable->setColumnCount(4);
+	editTable->setColumnCount(8);
 	QTableWidgetItem *header0 = new QTableWidgetItem(tr("Question Type"));
 	editTable->setHorizontalHeaderItem(0, header0);
 	QTableWidgetItem *header1 = new QTableWidgetItem(tr("Question"));
 	editTable->setHorizontalHeaderItem(1, header1);
-	QTableWidgetItem *header2 = new QTableWidgetItem(tr("Answer Type"));
+	QTableWidgetItem *header2 = new QTableWidgetItem(tr("Question Source"));
 	editTable->setHorizontalHeaderItem(2, header2);
-	QTableWidgetItem *header3 = new QTableWidgetItem(tr("Answer"));
+	QTableWidgetItem *header3 = new QTableWidgetItem(tr("Question Licence"));
 	editTable->setHorizontalHeaderItem(3, header3);
+	QTableWidgetItem *header4 = new QTableWidgetItem(tr("Answer Type"));
+	editTable->setHorizontalHeaderItem(4, header4);
+	QTableWidgetItem *header5 = new QTableWidgetItem(tr("Answer"));
+	editTable->setHorizontalHeaderItem(5, header5);
+	QTableWidgetItem *header6 = new QTableWidgetItem(tr("Answer Source"));
+	editTable->setHorizontalHeaderItem(6, header6);
+	QTableWidgetItem *header7 = new QTableWidgetItem(tr("Answer Licence"));
+	editTable->setHorizontalHeaderItem(7, header7);
 	editTable->resizeColumnsToContents();
 	editTable->resizeRowsToContents();
 	editTable->setEnabled(false);
