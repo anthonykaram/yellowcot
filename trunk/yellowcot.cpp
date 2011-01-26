@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.15, released 2011-01-22
+	Yellowcot 1.1.16, released 2011-01-25
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -49,6 +49,8 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	editTable = new QTableWidget(this);
 	editTable->setRowCount(0);
 	editTable->setColumnCount(8);
+	editTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+	editTable->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 	QTableWidgetItem *header0 = new QTableWidgetItem(tr("Question Type"));
 	editTable->setHorizontalHeaderItem(0, header0);
 	QTableWidgetItem *header1 = new QTableWidgetItem(tr("Question"));
