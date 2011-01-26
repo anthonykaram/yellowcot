@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.15, released 2011-01-22
+	Yellowcot 1.1.16, released 2011-01-25
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -24,7 +24,7 @@
 #include <cstdlib>
 #include <sys/time.h>
 
-#define VERSION "1.1.15"
+#define VERSION "1.1.16"
 #define STRLEN 1000
 #define MINWIDTH 500
 #define MINHEIGHT 300
