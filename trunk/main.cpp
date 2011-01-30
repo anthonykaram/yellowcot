@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.16, released 2011-01-25
+	Yellowcot 1.1.17, released 2011-01-29
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -27,15 +27,32 @@ int main(int argc, char *argv[]) {
 	//define qapplication class
 	QApplication app(argc, argv);
 
-	//quit if it is not the only Yellowcot instance
+	//make file object
 	FILE *file;
+
+	//quit if it is not the only Yellowcot instance
 	if ((file = fopen("/var/tmp/yellowcot_quiz", "r"))) {
 		QMessageBox::critical(0, QString("Fatal Error"), QString("Multiple, simultaneous instances of Yellowcot is not yet a supported feature. Sorry."));
 		return 1;
+		fclose (file);
 	}
 
 	//create temporary directory for yellowcot quiz
 	system("mkdir /var/tmp/yellowcot_quiz");
+
+	//grab config file, or create it if it doesn't exist
+	system("cp ~/.yellowcot/config /var/tmp/yellowcot_quiz/config > /dev/null 2>&1");
+if ((file = fopen("/var/tmp/yellowcot_quiz/config", "r")))
+	fclose(file);
+else {
+	system("echo -e \"# Yellowcot configuration file\n#\n# If you'd like to use a font other than the default, specify\n# its path (e.g. /usr/share/fonts/TTF/Unifont.ttf) here.\n#font=\" > /var/tmp/yellowcot_quiz/config");
+	system("mkdir ~/.yellowcot");
+	system("cp /var/tmp/yellowcot_quiz/config ~/.yellowcot/config");
+}
+
+
+
+
 
 	//start translator
 	QTranslator translator;
