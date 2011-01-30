@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.17, released 2011-01-29
+	Yellowcot 1.1.18, released 2011-01-30
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -40,19 +40,17 @@ int main(int argc, char *argv[]) {
 	//create temporary directory for yellowcot quiz
 	system("mkdir /var/tmp/yellowcot_quiz");
 
-	//grab config file, or create it if it doesn't exist
+	//create config file if it doesn't already exist
 	system("cp ~/.yellowcot/config /var/tmp/yellowcot_quiz/config > /dev/null 2>&1");
-if ((file = fopen("/var/tmp/yellowcot_quiz/config", "r")))
-	fclose(file);
-else {
-	system("echo -e \"# Yellowcot configuration file\n#\n# If you'd like to use a font other than the default, specify\n# its path (e.g. /usr/share/fonts/TTF/Unifont.ttf) here.\n#font=\" > /var/tmp/yellowcot_quiz/config");
-	system("mkdir ~/.yellowcot");
-	system("cp /var/tmp/yellowcot_quiz/config ~/.yellowcot/config");
-}
-
-
-
-
+	if ((file = fopen("/var/tmp/yellowcot_quiz/config", "r"))) {
+		fclose(file);
+		remove("/var/tmp/yellowcot_quiz/config");
+	}
+	else {
+		system("echo -e \"# Yellowcot configuration file\n#\n# If you'd like to use a font other than the default, specify\n# its path (e.g. /usr/share/fonts/TTF/Unifont.ttf) here.\n#font=\" > /var/tmp/yellowcot_quiz/config");
+		system("mkdir ~/.yellowcot");
+		system("mv /var/tmp/yellowcot_quiz/config ~/.yellowcot/config");
+	}
 
 	//start translator
 	QTranslator translator;

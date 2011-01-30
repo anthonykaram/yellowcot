@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.17, released 2011-01-29
+	Yellowcot 1.1.18, released 2011-01-30
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -24,7 +24,7 @@
 #include <cstdlib>
 #include <sys/time.h>
 
-#define VERSION "1.1.17"
+#define VERSION "1.1.18"
 #define STRLEN 1000
 #define MINWIDTH 500
 #define MINHEIGHT 300
@@ -313,7 +313,7 @@ class YCQuiz : public QWidget {
 				fprintf(file, "</quiz>");
 				fclose(file);
 				memset(str, 0, STRLEN);
-				sprintf(str, "rm \"%s\" ; cd /var/tmp/yellowcot_quiz ; tar cf \"%s\" --exclude=text.png --exclude=config *", theFilePath->text().toUtf8().data(), theFilePath->text().toUtf8().data());
+				sprintf(str, "rm \"%s\" ; cd /var/tmp/yellowcot_quiz ; tar cf \"%s\" --exclude=text.png *", theFilePath->text().toUtf8().data(), theFilePath->text().toUtf8().data());
 				system(str);
 				memset(str, 0, STRLEN);
 				sprintf(str, "File saved to %s.", theFilePath->text().toUtf8().data());
@@ -444,7 +444,7 @@ class YCQuiz : public QWidget {
 				moveRowDown->setEnabled(true);
 				insertImage->setEnabled(true);
 				memset(untarStr, 0, STRLEN);
-				sprintf(untarStr, "rm -r /var/tmp/yellowcot_quiz/a > /dev/null 2>&1 ; rm -r /var/tmp/yellowcot_quiz/i > /dev/null 2>&1 ; rm -r /var/tmp/yellowcot_quiz/v > /dev/null 2>&1 ; rm /var/tmp/yellowcot_quiz/index.xml > /dev/null 2>&1 ; tar xf \"%s\" -C /var/tmp/yellowcot_quiz ; ", theFilePath->text().toUtf8().data());
+				sprintf(untarStr, "rm -r /var/tmp/yellowcot_quiz/* > /dev/null 2>&1 ; tar xf \"%s\" -C /var/tmp/yellowcot_quiz ; ", theFilePath->text().toUtf8().data());
 				system(untarStr);
 				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "r");
 				if (file != NULL) {
@@ -553,7 +553,7 @@ class YCQuiz : public QWidget {
 				memset(str, 0, STRLEN);
 				memset(newStr, 0, STRLEN);
 				addSlashes(questionsAndAnswersList->currentText().toUtf8().data(), newStr);
-				sprintf(str, "font=$(more /var/tmp/yellowcot_quiz/config | grep \"font=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize %d -size %dx caption:\"%s\" /var/tmp/yellowcot_quiz/text.png ; else convert -gravity Center -background transparent -pointsize %d -size %dx caption:\"%s\" /var/tmp/yellowcot_quiz/text.png ; fi", BUTTON_TEXT_SIZE, buttonWidth - IMAGEBORDER, newStr, BUTTON_TEXT_SIZE, buttonWidth - IMAGEBORDER, newStr);
+				sprintf(str, "font=$(more ~/.yellowcot/config | grep \"font=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize %d -size %dx caption:\"%s\" /var/tmp/yellowcot_quiz/text.png ; else convert -gravity Center -background transparent -pointsize %d -size %dx caption:\"%s\" /var/tmp/yellowcot_quiz/text.png ; fi", BUTTON_TEXT_SIZE, buttonWidth - IMAGEBORDER, newStr, BUTTON_TEXT_SIZE, buttonWidth - IMAGEBORDER, newStr);
 				system(str);
 				currQorA->setIcon(QIcon(QPixmap("/var/tmp/yellowcot_quiz/text.png").scaled(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
 				currQorA->setIconSize(QSize(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER));
