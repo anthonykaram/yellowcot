@@ -52,6 +52,11 @@ MainWindow::MainWindow() {
 	saveAct->setShortcut(tr("Ctrl+S", "Save"));
 	fileMenu->addAction(saveAct);
 	fileMenu->addSeparator();
+	QAction *exportAct = new QAction(tr("&Export to MP3"), this);
+	connect(exportAct, SIGNAL(triggered()), ycQuiz, SLOT(exportMP3()));
+	exportAct->setShortcut(tr("Ctrl+E", "Export"));
+	fileMenu->addAction(exportAct);
+	fileMenu->addSeparator();
 	QAction *exitAct = new QAction(QtIconLoader::icon("application-exit"), tr("&Quit"), this);
 	connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 	exitAct->setShortcut(tr("Ctrl+Q", "Quit"));

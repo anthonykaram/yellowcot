@@ -219,6 +219,21 @@ class YCQuiz : public QWidget {
 				editTable->setCurrentCell(i+1, editTable->currentColumn());
 			}
 		}
+		void exportMP3() {
+			system("sox -r 16k -n /var/tmp/yellowcot_quiz/silence.wav trim 0 5");
+			system("cp /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out.wav");
+			for (int i = 0 ; i < 3 * (endBox->maximum()) ; i++) {
+				system("echo \"question\" | text2wave -o /var/tmp/yellowcot_quiz/question.wav");
+				system("sox /var/tmp/yellowcot_quiz/out.wav /var/tmp/yellowcot_quiz/question.wav /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out2.wav");
+				system("mv /var/tmp/yellowcot_quiz/out2.wav /var/tmp/yellowcot_quiz/out.wav");
+				system("echo \"answer\" | text2wave -o /var/tmp/yellowcot_quiz/answer.wav");
+				system("sox /var/tmp/yellowcot_quiz/out.wav /var/tmp/yellowcot_quiz/answer.wav /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out2.wav");
+				system("mv /var/tmp/yellowcot_quiz/out2.wav /var/tmp/yellowcot_quiz/out.wav");
+			}
+			system("lame /var/tmp/yellowcot_quiz/out.wav ~/ycquiz.mp3 ; rm /var/tmp/yellowcot_quiz/*.wav");
+			system("rm /var/tmp/yellowcot_quiz/*.wav");
+			QMessageBox::information(this, tr("Export to MP3"), tr("Yellowcot quiz successfully exported to: ~/ycquiz.mp3"));
+		}
 		void saveFile(QWidget *qLbl) {
 			QLabel *theFilePath = qobject_cast<QLabel*>(qLbl);
 			if (!(theFilePath->text().isNull())) {
