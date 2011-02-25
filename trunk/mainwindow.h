@@ -48,7 +48,7 @@ class MainWindow : public QMainWindow {
 			QMessageBox::information(this, tr("Help"), tr("Coming soon..."));
 		}
 		void about() {
-			QMessageBox::information(this, tr("About Yellowcot"), tr("<h3>version ")+QString(VERSION)+tr("</h3>Written by Anthony Karam. Special thanks to the GNU LGPL project, <a href=http://code.google.com/p/qticonloader>qticonloader</a> (SVN revision 897 used in Yellowcot ")+QString(VERSION)+tr(")."));
+			QMessageBox::information(this, tr("About Yellowcot"), tr("<h3>version ")+QString(VERSION)+tr("</h3><p align=justify>Website: <a href=http://code.google.com/p/yellowcot>code.google.com/p/yellowcot</a></p><p align=justify>Written by Anthony Karam. Special thanks to the GNU LGPL project, <a href=http://code.google.com/p/qticonloader>qticonloader</a> (SVN revision 897 used in Yellowcot ")+QString(VERSION)+tr(").</p>"));
 		}
 		void removeTempFiles() {
 			system("rm -r /var/tmp/yellowcot_* > /dev/null 2>&1");

@@ -220,9 +220,22 @@ class YCQuiz : public QWidget {
 			}
 		}
 		void exportMP3() {
+
+			//declare variables
+			timeval tv;
+			int x;
+			int numqs = 3;
+
+			//generate new random seed based on microseconds since UNIX epoch
+			gettimeofday(&tv, NULL);
+			srand((int)tv.tv_usec);
+
+			//create the mp3
 			system("sox -r 16k -n /var/tmp/yellowcot_quiz/silence.wav trim 0 5");
 			system("cp /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out.wav");
-			for (int i = 0 ; i < 3 * (endBox->maximum()) ; i++) {
+			for (int i = 0 ; i < numqs * (endBox->maximum()) ; i++) {
+				x = (int)((double)rand() * numqs) / RAND_MAX + 1;
+				printf("%d\n", x);
 				system("echo \"question\" | text2wave -o /var/tmp/yellowcot_quiz/question.wav");
 				system("sox /var/tmp/yellowcot_quiz/out.wav /var/tmp/yellowcot_quiz/question.wav /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out2.wav");
 				system("mv /var/tmp/yellowcot_quiz/out2.wav /var/tmp/yellowcot_quiz/out.wav");
@@ -232,6 +245,8 @@ class YCQuiz : public QWidget {
 			}
 			system("lame /var/tmp/yellowcot_quiz/out.wav ~/ycquiz.mp3 ; rm /var/tmp/yellowcot_quiz/*.wav");
 			system("rm /var/tmp/yellowcot_quiz/*.wav");
+
+			//tell the user of the success
 			QMessageBox::information(this, tr("Export to MP3"), tr("Yellowcot quiz successfully exported to: ~/ycquiz.mp3"));
 		}
 		void saveFile(QWidget *qLbl) {
