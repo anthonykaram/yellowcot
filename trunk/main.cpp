@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.18, released 2011-01-30
+	Yellowcot 1.1.19, released 2011-03-03
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 
 	//quit if it is not the only Yellowcot instance
 	if ((file = fopen("/var/tmp/yellowcot_quiz", "r"))) {
-		QMessageBox::critical(0, QString("Fatal Error"), QString("Multiple, simultaneous instances of Yellowcot is not yet a supported feature. Sorry."));
+		QMessageBox::critical(0, QString("Fatal Error"), QString("Multiple, simultaneous instances of Yellowcot is not yet a supported feature. If you are certain another instance is not running, you may execute \"sudo rm -r /var/tmp/yellowcot_quiz\"."));
 		return 1;
 		fclose (file);
 	}

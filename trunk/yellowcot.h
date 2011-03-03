@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.18, released 2011-01-30
+	Yellowcot 1.1.19, released 2011-03-03
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -24,7 +24,7 @@
 #include <cstdlib>
 #include <sys/time.h>
 
-#define VERSION "1.1.18"
+#define VERSION "1.1.19"
 #define STRLEN 1000
 #define MINWIDTH 500
 #define MINHEIGHT 300
@@ -224,7 +224,9 @@ class YCQuiz : public QWidget {
 			//declare variables
 			timeval tv;
 			int x;
-			int numqs = 3;
+			int numqs = questionsAndAnswersList->count() / 8;
+			char str[STRLEN];
+			int numinstances = 3;
 
 			//generate new random seed based on microseconds since UNIX epoch
 			gettimeofday(&tv, NULL);
@@ -233,18 +235,20 @@ class YCQuiz : public QWidget {
 			//create the mp3
 			system("sox -r 16k -n /var/tmp/yellowcot_quiz/silence.wav trim 0 5");
 			system("cp /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out.wav");
-			for (int i = 0 ; i < numqs * (endBox->maximum()) ; i++) {
-				x = (int)((double)rand() * numqs) / RAND_MAX + 1;
-				printf("%d\n", x);
-				system("echo \"question\" | text2wave -o /var/tmp/yellowcot_quiz/question.wav");
+			for (int i = 0 ; i < numqs * numinstances ; i++) {
+				x = (int)((double)rand() * numqs / RAND_MAX + 1);
+				memset(str, 0, STRLEN);
+				sprintf(str, "echo \"%s\" | text2wave -o /var/tmp/yellowcot_quiz/question.wav", questionsAndAnswersList->itemText(x * 8 - 7).toUtf8().data());
+				system(str);
 				system("sox /var/tmp/yellowcot_quiz/out.wav /var/tmp/yellowcot_quiz/question.wav /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out2.wav");
 				system("mv /var/tmp/yellowcot_quiz/out2.wav /var/tmp/yellowcot_quiz/out.wav");
-				system("echo \"answer\" | text2wave -o /var/tmp/yellowcot_quiz/answer.wav");
+				memset(str, 0, STRLEN);
+				sprintf(str, "echo \"%s\" | text2wave -o /var/tmp/yellowcot_quiz/answer.wav", questionsAndAnswersList->itemText(x * 8 - 3).toUtf8().data());
+				system(str);
 				system("sox /var/tmp/yellowcot_quiz/out.wav /var/tmp/yellowcot_quiz/answer.wav /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out2.wav");
 				system("mv /var/tmp/yellowcot_quiz/out2.wav /var/tmp/yellowcot_quiz/out.wav");
 			}
 			system("lame /var/tmp/yellowcot_quiz/out.wav ~/ycquiz.mp3 ; rm /var/tmp/yellowcot_quiz/*.wav");
-			system("rm /var/tmp/yellowcot_quiz/*.wav");
 
 			//tell the user of the success
 			QMessageBox::information(this, tr("Export to MP3"), tr("Yellowcot quiz successfully exported to: ~/ycquiz.mp3"));
