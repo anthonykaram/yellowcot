@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.19, released 2011-03-03
+	Yellowcot 1.1.20, released 2011-08-21
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 		remove("/var/tmp/yellowcot_quiz/config");
 	}
 	else {
-		system("echo -e \"# Yellowcot configuration file\n#\n# If you'd like to use a font other than the default, specify\n# its path (e.g. /usr/share/fonts/TTF/Unifont.ttf) here.\n#font=\" > /var/tmp/yellowcot_quiz/config");
+		system("echo -e \"# Yellowcot configuration file\n#\n# If you'd like to use a font other than the default, specify\n# its path (e.g. /usr/local/share/fonts/c/code2000.ttf) here.\n#font=\" > /var/tmp/yellowcot_quiz/config");
 		system("mkdir ~/.yellowcot");
 		system("mv /var/tmp/yellowcot_quiz/config ~/.yellowcot/config");
 	}

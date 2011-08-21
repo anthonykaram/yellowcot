@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.19, released 2011-03-03
+	Yellowcot 1.1.20, released 2011-08-21
 
 	Copyleft 2011 Anthony Karam Karam
 

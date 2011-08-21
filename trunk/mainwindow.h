@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.19, released 2011-03-03
+	Yellowcot 1.1.20, released 2011-08-21
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -40,7 +40,7 @@ class MainWindow : public QMainWindow {
 
 	public slots:
 		void open(){
-			filePathLbl->setText(QFileDialog::getOpenFileName(this, tr("Open Yellowcot File"), "/home/karam", tr("Yellowcot Files (*.yc)")));
+			filePathLbl->setText(QFileDialog::getOpenFileName(this, tr("Open Yellowcot File"), "", tr("Yellowcot Files (*.yc)")));
 			if (!filePathLbl->text().isNull())
 				statusLabel->setText(QString("Using <i>")+filePathLbl->text()+QString("</i>."));
 		}
