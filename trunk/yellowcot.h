@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.20, released 2011-08-21
+	Yellowcot 1.2.0, released YYYY-MM-DD
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -24,11 +24,10 @@
 #include <cstdlib>
 #include <sys/time.h>
 
-#define VERSION "1.1.20"
+#define VERSION "1.2.0"
 #define STRLEN 1000
 #define MINWIDTH 500
 #define MINHEIGHT 300
-#define BUTTON_TEXT_SIZE 18
 #define IMAGEBORDER 12
 
 class YCQuiz : public QWidget {
@@ -38,6 +37,9 @@ class YCQuiz : public QWidget {
 		YCQuiz (QWidget *parent = 0);
 		QTabBar *tabBar;
 		QComboBox *questionsAndAnswersList;
+		QCheckBox *fileIsLoaded;
+
+		//quiz tab widgets
 		QPushButton *currQorA;
 		QLabel *rangeLbl;
 		QSpinBox *startBox;
@@ -45,13 +47,17 @@ class YCQuiz : public QWidget {
 		QSpinBox *endBox;
 		QLabel *reversedLbl;
 		QCheckBox *reversedCheckBox;
+
+		//media tab widgets
+		QTableWidget *mediaTable;
+
+		//questions/answers tab widgets
 		QTableWidget *editTable;
 		QPushButton *insertRow;
 		QPushButton *removeRow;
 		QPushButton *moveRowUp;
 		QPushButton *moveRowDown;
 		QPushButton *insertImage;
-		QCheckBox *fileIsLoaded;
 
 	public slots:
 		void resizeEvent(QResizeEvent *event) {
@@ -357,12 +363,19 @@ class YCQuiz : public QWidget {
 		void updateVisibleWidgets() {
 			int currentTab = tabBar->currentIndex();
 			if (currentTab == 0) {
+
+				//hide media tab widgets
+				mediaTable->hide();
+
+				//hide questions/answers tab widgets
 				editTable->hide();
 				insertRow->hide();
 				removeRow->hide();
 				moveRowUp->hide();
 				moveRowDown->hide();
 				insertImage->hide();
+
+				//show quiz tab widgets
 				currQorA->show();
 				rangeLbl->show();
 				startBox->show();
@@ -371,7 +384,9 @@ class YCQuiz : public QWidget {
 				reversedLbl->show();
 				reversedCheckBox->show();
 			}
-			else {
+			else if (currentTab == 1) {
+
+				//hide quiz tab widgets
 				currQorA->hide();
 				rangeLbl->hide();
 				startBox->hide();
@@ -379,6 +394,33 @@ class YCQuiz : public QWidget {
 				endBox->hide();
 				reversedLbl->hide();
 				reversedCheckBox->hide();
+
+				//hide questions/answers tab widgets
+				editTable->hide();
+				insertRow->hide();
+				removeRow->hide();
+				moveRowUp->hide();
+				moveRowDown->hide();
+				insertImage->hide();
+
+				//show media tab widgets
+				mediaTable->show();
+			}
+			else {
+
+				//hide quiz tab widgets
+				currQorA->hide();
+				rangeLbl->hide();
+				startBox->hide();
+				toLbl->hide();
+				endBox->hide();
+				reversedLbl->hide();
+				reversedCheckBox->hide();
+
+				//hide media tab widgets
+				mediaTable->hide();
+
+				//show questions/answers tab widgets
 				editTable->show();
 				insertRow->show();
 				removeRow->show();
@@ -387,6 +429,71 @@ class YCQuiz : public QWidget {
 				insertImage->show();
 			}
 			updateButtonContents();
+		}
+		int extractXMLContent(char * in, const char * tag, char * out) {
+
+			//prepare variables
+			int i=0, j=0, k=0, startTagLength=0, endTagLength=0, tagFound=0;
+			char startTag[STRLEN], endTag[STRLEN];
+			memset(out, 0, STRLEN);
+			memset(startTag, 0, STRLEN);
+			memset(endTag, 0, STRLEN);
+
+			//create start tag and store its length
+			startTag[0] = '<';
+			while (tag[i] != '\0') {
+				startTag[i+1] = tag[i];
+				i++;
+			}
+			startTag[i+1] = '>';
+			startTagLength = i + 2;
+
+			//create end tag and store its length
+			i = 0;
+			endTag[0] = '<';
+			endTag[1] = '/';
+			while (tag[i] != '\0') {
+				endTag[i+2] = tag[i];
+				i++;
+			}
+			endTag[i+2] = '>';
+			endTagLength = i + 3;
+
+			//read through completion of start tag
+			i = 0;
+			while (!tagFound && in[j] != '\0') {
+				if (in[j] == startTag[i]) {
+					i++;
+					if (i == startTagLength)
+						tagFound = 1;
+				}
+				else
+					i = 0;
+				j++;
+			}
+			if (!tagFound)
+				return 0;
+
+			//read through completion of end tag
+			tagFound = 0;
+			i = 0;
+			while (!tagFound && in[j] != '\0') {
+				out[k++] = in[j];
+				if (in[j] == endTag[i]) {
+					i++;
+					if (i == endTagLength)
+						tagFound = 1;
+				}
+				else
+					i = 0;
+				j++;
+			}
+			if (!tagFound)
+				return 0;
+
+			//remove the end tag from the end of the data
+			out[k-i] = '\0';
+			return 1;
 		}
 		int extractQOrA(char * in, char * out) {
 			int i=0, j=0, endCarrotFound=0, startCarrotFound=0;
@@ -461,9 +568,10 @@ class YCQuiz : public QWidget {
 			fileIsLoaded->setChecked(false);
 			if (!(theFilePath->text().isNull())) {
 				FILE *file;
-				char qOrA[STRLEN], untarStr[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN];
+				char indexXMLChunk[STRLEN], qOrA[STRLEN], untarStr[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN], content[STRLEN];
 				int ctr=0;
 				questionsAndAnswersList->clear();
+				mediaTable->setEnabled(true);
 				currQorA->setEnabled(true);
 				rangeLbl->setEnabled(true);
 				startBox->setEnabled(true);
@@ -480,6 +588,8 @@ class YCQuiz : public QWidget {
 				memset(untarStr, 0, STRLEN);
 				sprintf(untarStr, "rm -r /var/tmp/yellowcot_quiz/* > /dev/null 2>&1 ; tar xf \"%s\" -C /var/tmp/yellowcot_quiz ; ", theFilePath->text().toUtf8().data());
 				system(untarStr);
+
+				//read in data (old code)
 				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "r");
 				if (file != NULL) {
 					memset(qOrA, 0, STRLEN);
@@ -571,6 +681,41 @@ class YCQuiz : public QWidget {
 				}
 				editTable->resizeColumnsToContents();
 				editTable->resizeRowsToContents();
+
+				//populate media table based on index.xml
+				ctr = 0;
+				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "r");
+				mediaTable->clear();
+				mediaTable->setColumnCount(4);
+				mediaTable->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Extension")));
+				mediaTable->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Source")));
+				mediaTable->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Licence")));
+				mediaTable->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Used?")));
+				if (file != NULL) {
+					memset(indexXMLChunk, 0, STRLEN);
+					while (fgets(indexXMLChunk, STRLEN, file)) {
+						if (strchr(indexXMLChunk, '\n') != NULL)
+							if (extractXMLContent(indexXMLChunk, "id", content))
+								ctr++;
+						memset(indexXMLChunk, 0, STRLEN);
+					}
+					fclose(file);
+				}
+				mediaTable->setRowCount(ctr);
+				if (file != NULL) {
+					memset(indexXMLChunk, 0, STRLEN);
+					while (fgets(indexXMLChunk, STRLEN, file)) {
+						if (strchr(indexXMLChunk, '\n') != NULL)
+							if (extractXMLContent(indexXMLChunk, "id", content))
+								ctr++;
+						memset(indexXMLChunk, 0, STRLEN);
+					}
+					fclose(file);
+				}
+				mediaTable->resizeColumnsToContents();
+				mediaTable->resizeRowsToContents();
+
+				//note that file has been loaded
 				fileIsLoaded->setChecked(true);
 			}
 		}
@@ -587,7 +732,7 @@ class YCQuiz : public QWidget {
 				memset(str, 0, STRLEN);
 				memset(newStr, 0, STRLEN);
 				addSlashes(questionsAndAnswersList->currentText().toUtf8().data(), newStr);
-				sprintf(str, "font=$(more ~/.yellowcot/config | grep \"font=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize %d -size %dx caption:\"%s\" /var/tmp/yellowcot_quiz/text.png ; else convert -gravity Center -background transparent -pointsize %d -size %dx caption:\"%s\" /var/tmp/yellowcot_quiz/text.png ; fi", BUTTON_TEXT_SIZE, buttonWidth - IMAGEBORDER, newStr, BUTTON_TEXT_SIZE, buttonWidth - IMAGEBORDER, newStr);
+				sprintf(str, "font=$(more ~/.yellowcot/config | grep \"font=\") ; fontsize=$(more ~/.yellowcot/config | grep \"fontsize=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" /var/tmp/yellowcot_quiz/text.png ; else convert -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" /var/tmp/yellowcot_quiz/text.png ; fi", buttonWidth - IMAGEBORDER, newStr, buttonWidth - IMAGEBORDER, newStr);
 				system(str);
 				currQorA->setIcon(QIcon(QPixmap("/var/tmp/yellowcot_quiz/text.png").scaled(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
 				currQorA->setIconSize(QSize(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER));

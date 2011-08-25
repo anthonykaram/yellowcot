@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.20, released 2011-08-21
+	Yellowcot 1.2.0, released YYYY-MM-DD
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -21,12 +21,15 @@
 
 YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 
-	//create widgets
+	//create general widgets
 	fileIsLoaded = new QCheckBox();
 	tabBar = new QTabBar;
 	tabBar->addTab(tr("Quiz"));
-	tabBar->addTab(tr("Edit"));
+	tabBar->addTab(tr("Media"));
+	tabBar->addTab(tr("Questions/Answers"));
 	questionsAndAnswersList = new QComboBox();
+
+	//create quiz tab widgets
 	currQorA = new QPushButton();
 	currQorA->setLayout(new QHBoxLayout());
 	currQorA->setEnabled(false);
@@ -46,6 +49,26 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	reversedLbl->setEnabled(false);
 	reversedCheckBox = new QCheckBox(tr("Swap Questions and Answers"));
 	reversedCheckBox->setEnabled(false);
+
+	//create media tab widgets
+	mediaTable = new QTableWidget(this);
+	mediaTable->setRowCount(0);
+	mediaTable->setColumnCount(4);
+	mediaTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+	mediaTable->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+	QTableWidgetItem *mediaheader0 = new QTableWidgetItem(tr("Extension"));
+	mediaTable->setHorizontalHeaderItem(0, mediaheader0);
+	QTableWidgetItem *mediaheader1 = new QTableWidgetItem(tr("Source"));
+	mediaTable->setHorizontalHeaderItem(1, mediaheader1);
+	QTableWidgetItem *mediaheader2 = new QTableWidgetItem(tr("Licence"));
+	mediaTable->setHorizontalHeaderItem(2, mediaheader2);
+	QTableWidgetItem *mediaheader3 = new QTableWidgetItem(tr("Used?"));
+	mediaTable->setHorizontalHeaderItem(3, mediaheader3);
+	mediaTable->resizeColumnsToContents();
+	mediaTable->resizeRowsToContents();
+	mediaTable->setEnabled(false);
+
+	//create questions/answers tab widgets
 	editTable = new QTableWidget(this);
 	editTable->setRowCount(0);
 	editTable->setColumnCount(8);
@@ -111,11 +134,12 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	mainLayout->addWidget(endBox, 2, 3);
 	mainLayout->addWidget(reversedLbl, 3, 0);
 	mainLayout->addWidget(reversedCheckBox, 3, 1, 1, 3);
-	mainLayout->addWidget(editTable, 4, 0, 1, 4);
-	mainLayout->addWidget(insertRow, 5, 0, 1, 2);
-	mainLayout->addWidget(removeRow, 5, 2, 1, 2);
-	mainLayout->addWidget(moveRowUp, 6, 0, 1, 2);
-	mainLayout->addWidget(moveRowDown, 6, 2, 1, 2);
-	mainLayout->addWidget(insertImage, 7, 0, 1, 4);
+	mainLayout->addWidget(mediaTable, 4, 0, 1, 4);
+	mainLayout->addWidget(editTable, 5, 0, 1, 4);
+	mainLayout->addWidget(insertRow, 6, 0, 1, 2);
+	mainLayout->addWidget(removeRow, 6, 2, 1, 2);
+	mainLayout->addWidget(moveRowUp, 7, 0, 1, 2);
+	mainLayout->addWidget(moveRowDown, 7, 2, 1, 2);
+	mainLayout->addWidget(insertImage, 8, 0, 1, 4);
 	setLayout(mainLayout);
 }
