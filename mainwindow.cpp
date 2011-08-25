@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.20, released 2011-08-21
+	Yellowcot 1.2.0, released YYYY-MM-DD
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -31,6 +31,11 @@ MainWindow::MainWindow() {
 
 	//create and populate file menu in menu bar
 	QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
+	QAction *newAct = new QAction(QtIconLoader::icon("document-new"), tr("&New"), this);
+	connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
+	newAct->setShortcut(tr("Ctrl+N", "New"));
+	fileMenu->addAction(newAct);
+	fileMenu->addSeparator();
 	QAction *openAct = new QAction(QtIconLoader::icon("document-open"), tr("&Open"), this);
 	connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 	QSignalMapper *signalMapper1 = new QSignalMapper(this);

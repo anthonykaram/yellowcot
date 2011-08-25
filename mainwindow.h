@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.1.20, released 2011-08-21
+	Yellowcot 1.2.0, released YYYY-MM-DD
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -39,6 +39,9 @@ class MainWindow : public QMainWindow {
 		QLabel *filePathLbl;
 
 	public slots:
+		void newFile() {
+			QMessageBox::information(this, tr("New"), tr("Coming soon..."));
+		}
 		void open(){
 			filePathLbl->setText(QFileDialog::getOpenFileName(this, tr("Open Yellowcot File"), "", tr("Yellowcot Files (*.yc)")));
 			if (!filePathLbl->text().isNull())
