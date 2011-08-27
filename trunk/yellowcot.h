@@ -709,19 +709,18 @@ class YCQuiz : public QWidget {
 						if (strchr(indexXMLChunk, '\n') != NULL)
 							if (!currCol && extractXMLContent(indexXMLChunk, "extension", content)) {
 								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
-								mediaTable->setItem(ctr, currCol, mediaCell);
-								currCol++;
+								mediaTable->setItem(ctr, currCol++, mediaCell);
 							}
 							else if (currCol == 1 && extractXMLContent(indexXMLChunk, "src", content)) {
 								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
-								mediaTable->setItem(ctr, currCol, mediaCell);
-								currCol++;
+								mediaTable->setItem(ctr, currCol++, mediaCell);
 							}
 							else if (currCol == 2 && extractXMLContent(indexXMLChunk, "licence", content)) {
 								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
-								mediaTable->setItem(ctr, currCol, mediaCell);
+								mediaTable->setItem(ctr, currCol++, mediaCell);
+								QTableWidgetItem *mediaCell2 = new QTableWidgetItem(QString::fromUtf8("N"));
+								mediaTable->setItem(ctr++, currCol, mediaCell2);
 								currCol = 0;
-								ctr++;
 							}
 						memset(indexXMLChunk, 0, STRLEN);
 					}
