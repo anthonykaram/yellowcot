@@ -569,7 +569,7 @@ class YCQuiz : public QWidget {
 			if (!(theFilePath->text().isNull())) {
 				FILE *file;
 				char indexXMLChunk[STRLEN], qOrA[STRLEN], untarStr[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN], content[STRLEN];
-				int ctr=0;
+				int ctr=0, currCol=0, mediaRows;
 				questionsAndAnswersList->clear();
 				mediaTable->setEnabled(true);
 				currQorA->setEnabled(true);
@@ -683,7 +683,6 @@ class YCQuiz : public QWidget {
 				editTable->resizeRowsToContents();
 
 				//populate media table based on index.xml
-				ctr = 0;
 				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "r");
 				mediaTable->clear();
 				mediaTable->setColumnCount(4);
@@ -696,19 +695,34 @@ class YCQuiz : public QWidget {
 					while (fgets(indexXMLChunk, STRLEN, file)) {
 						if (strchr(indexXMLChunk, '\n') != NULL)
 							if (extractXMLContent(indexXMLChunk, "id", content))
-								ctr++;
+								mediaRows++;
 						memset(indexXMLChunk, 0, STRLEN);
 					}
 					fclose(file);
 				}
-				mediaTable->setRowCount(ctr);
+				mediaTable->setRowCount(mediaRows);
+				ctr = 0;
 				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "r");
 				if (file != NULL) {
 					memset(indexXMLChunk, 0, STRLEN);
-					while (fgets(indexXMLChunk, STRLEN, file)) {
+					while (ctr < mediaRows && fgets(indexXMLChunk, STRLEN, file)) {
 						if (strchr(indexXMLChunk, '\n') != NULL)
-							if (extractXMLContent(indexXMLChunk, "id", content))
+							if (!currCol && extractXMLContent(indexXMLChunk, "extension", content)) {
+								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
+								mediaTable->setItem(ctr, currCol, mediaCell);
+								currCol++;
+							}
+							else if (currCol == 1 && extractXMLContent(indexXMLChunk, "src", content)) {
+								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
+								mediaTable->setItem(ctr, currCol, mediaCell);
+								currCol++;
+							}
+							else if (currCol == 2 && extractXMLContent(indexXMLChunk, "licence", content)) {
+								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
+								mediaTable->setItem(ctr, currCol, mediaCell);
+								currCol = 0;
 								ctr++;
+							}
 						memset(indexXMLChunk, 0, STRLEN);
 					}
 					fclose(file);
