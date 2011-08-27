@@ -702,6 +702,7 @@ class YCQuiz : public QWidget {
 					fclose(file);
 				}
 				mediaTable->setRowCount(ctr);
+				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "r");
 				if (file != NULL) {
 					memset(indexXMLChunk, 0, STRLEN);
 					while (fgets(indexXMLChunk, STRLEN, file)) {
