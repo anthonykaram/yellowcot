@@ -50,6 +50,8 @@ class YCQuiz : public QWidget {
 
 		//media tab widgets
 		QTableWidget *mediaTable;
+		QPushButton *addMediaItem;
+		QPushButton *rmMediaItem;
 
 		//questions/answers tab widgets
 		QTableWidget *editTable;
@@ -366,6 +368,8 @@ class YCQuiz : public QWidget {
 
 				//hide media tab widgets
 				mediaTable->hide();
+				addMediaItem->hide();
+				rmMediaItem->hide();
 
 				//hide questions/answers tab widgets
 				editTable->hide();
@@ -405,6 +409,8 @@ class YCQuiz : public QWidget {
 
 				//show media tab widgets
 				mediaTable->show();
+				addMediaItem->show();
+				rmMediaItem->show();
 			}
 			else {
 
@@ -419,6 +425,8 @@ class YCQuiz : public QWidget {
 
 				//hide media tab widgets
 				mediaTable->hide();
+				addMediaItem->hide();
+				rmMediaItem->hide();
 
 				//show questions/answers tab widgets
 				editTable->show();
@@ -569,9 +577,10 @@ class YCQuiz : public QWidget {
 			if (!(theFilePath->text().isNull())) {
 				FILE *file;
 				char indexXMLChunk[STRLEN], qOrA[STRLEN], untarStr[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN], content[STRLEN];
-				int ctr=0, currCol=0, mediaRows;
+				int ctr=0, currCol=0, mediaRows=0;
 				questionsAndAnswersList->clear();
 				mediaTable->setEnabled(true);
+				addMediaItem->setEnabled(true);
 				currQorA->setEnabled(true);
 				rangeLbl->setEnabled(true);
 				startBox->setEnabled(true);
@@ -706,7 +715,7 @@ class YCQuiz : public QWidget {
 				if (file != NULL) {
 					memset(indexXMLChunk, 0, STRLEN);
 					while (ctr < mediaRows && fgets(indexXMLChunk, STRLEN, file)) {
-						if (strchr(indexXMLChunk, '\n') != NULL)
+						if (strchr(indexXMLChunk, '\n') != NULL) {
 							if (!currCol && extractXMLContent(indexXMLChunk, "extension", content)) {
 								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
 								mediaTable->setItem(ctr, currCol++, mediaCell);
@@ -722,6 +731,7 @@ class YCQuiz : public QWidget {
 								mediaTable->setItem(ctr++, currCol, mediaCell2);
 								currCol = 0;
 							}
+						}
 						memset(indexXMLChunk, 0, STRLEN);
 					}
 					fclose(file);

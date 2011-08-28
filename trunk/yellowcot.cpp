@@ -67,6 +67,10 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	mediaTable->resizeColumnsToContents();
 	mediaTable->resizeRowsToContents();
 	mediaTable->setEnabled(false);
+	addMediaItem = new QPushButton(tr("Add Media Item"));
+	addMediaItem->setEnabled(false);
+	rmMediaItem = new QPushButton(tr("Remove Media Item"));
+	rmMediaItem->setEnabled(false);
 
 	//create questions/answers tab widgets
 	editTable = new QTableWidget(this);
@@ -135,11 +139,13 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	mainLayout->addWidget(reversedLbl, 3, 0);
 	mainLayout->addWidget(reversedCheckBox, 3, 1, 1, 3);
 	mainLayout->addWidget(mediaTable, 4, 0, 1, 4);
-	mainLayout->addWidget(editTable, 5, 0, 1, 4);
-	mainLayout->addWidget(insertRow, 6, 0, 1, 2);
-	mainLayout->addWidget(removeRow, 6, 2, 1, 2);
-	mainLayout->addWidget(moveRowUp, 7, 0, 1, 2);
-	mainLayout->addWidget(moveRowDown, 7, 2, 1, 2);
-	mainLayout->addWidget(insertImage, 8, 0, 1, 4);
+	mainLayout->addWidget(addMediaItem, 5, 0, 1, 2);
+	mainLayout->addWidget(rmMediaItem, 5, 2, 1, 2);
+	mainLayout->addWidget(editTable, 6, 0, 1, 4);
+	mainLayout->addWidget(insertRow, 7, 0, 1, 2);
+	mainLayout->addWidget(removeRow, 7, 2, 1, 2);
+	mainLayout->addWidget(moveRowUp, 8, 0, 1, 2);
+	mainLayout->addWidget(moveRowDown, 8, 2, 1, 2);
+	mainLayout->addWidget(insertImage, 9, 0, 1, 4);
 	setLayout(mainLayout);
 }
