@@ -52,6 +52,8 @@ class YCQuiz : public QWidget {
 		QTableWidget *mediaTable;
 		QPushButton *addMediaItem;
 		QPushButton *rmMediaItem;
+		QPushButton *mvMediaRowUp;
+		QPushButton *mvMediaRowDown;
 
 		//questions/answers tab widgets
 		QTableWidget *editTable;
@@ -370,6 +372,8 @@ class YCQuiz : public QWidget {
 				mediaTable->hide();
 				addMediaItem->hide();
 				rmMediaItem->hide();
+				mvMediaRowUp->hide();
+				mvMediaRowDown->hide();
 
 				//hide questions/answers tab widgets
 				editTable->hide();
@@ -411,6 +415,8 @@ class YCQuiz : public QWidget {
 				mediaTable->show();
 				addMediaItem->show();
 				rmMediaItem->show();
+				mvMediaRowUp->show();
+				mvMediaRowDown->show();
 			}
 			else {
 
@@ -427,6 +433,8 @@ class YCQuiz : public QWidget {
 				mediaTable->hide();
 				addMediaItem->hide();
 				rmMediaItem->hide();
+				mvMediaRowUp->hide();
+				mvMediaRowDown->hide();
 
 				//show questions/answers tab widgets
 				editTable->show();
@@ -579,8 +587,14 @@ class YCQuiz : public QWidget {
 				char indexXMLChunk[STRLEN], qOrA[STRLEN], untarStr[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN], content[STRLEN];
 				int ctr=0, currCol=0, mediaRows=0;
 				questionsAndAnswersList->clear();
+
+				//enable media tab widgets
 				mediaTable->setEnabled(true);
 				addMediaItem->setEnabled(true);
+				rmMediaItem->setEnabled(true);
+				mvMediaRowUp->setEnabled(true);
+				mvMediaRowDown->setEnabled(true);
+
 				currQorA->setEnabled(true);
 				rangeLbl->setEnabled(true);
 				startBox->setEnabled(true);

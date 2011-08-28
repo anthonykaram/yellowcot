@@ -62,6 +62,11 @@ MainWindow::MainWindow() {
 	exportAct->setShortcut(tr("Ctrl+E", "Export"));
 	fileMenu->addAction(exportAct);
 	fileMenu->addSeparator();
+	QAction *closeAct = new QAction(QtIconLoader::icon("document-close"), tr("&Close"), this);
+	connect(closeAct, SIGNAL(triggered()), this, SLOT(closeFile()));
+	closeAct->setShortcut(tr("Ctrl+W", "Close"));
+	fileMenu->addAction(closeAct);
+	fileMenu->addSeparator();
 	QAction *exitAct = new QAction(QtIconLoader::icon("application-exit"), tr("&Quit"), this);
 	connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 	exitAct->setShortcut(tr("Ctrl+Q", "Quit"));
