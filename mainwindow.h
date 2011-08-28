@@ -42,6 +42,9 @@ class MainWindow : public QMainWindow {
 		void newFile() {
 			QMessageBox::information(this, tr("New"), tr("Coming soon..."));
 		}
+		void closeFile() {
+			QMessageBox::information(this, tr("Close"), tr("Coming soon..."));
+		}
 		void open(){
 			filePathLbl->setText(QFileDialog::getOpenFileName(this, tr("Open Yellowcot File"), "", tr("Yellowcot Files (*.yc)")));
 			if (!filePathLbl->text().isNull())

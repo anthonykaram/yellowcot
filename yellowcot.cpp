@@ -71,6 +71,10 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	addMediaItem->setEnabled(false);
 	rmMediaItem = new QPushButton(tr("Remove Media Item"));
 	rmMediaItem->setEnabled(false);
+	mvMediaRowUp = new QPushButton(tr("Move Up"));
+	mvMediaRowUp->setEnabled(false);
+	mvMediaRowDown = new QPushButton(tr("Move Down"));
+	mvMediaRowDown->setEnabled(false);
 
 	//create questions/answers tab widgets
 	editTable = new QTableWidget(this);
@@ -99,8 +103,8 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	editTable->setEnabled(false);
 	insertRow = new QPushButton(tr("Insert Row"));
 	removeRow = new QPushButton(tr("Remove Row"));
-	moveRowUp = new QPushButton(tr("Move Row Up"));
-	moveRowDown = new QPushButton(tr("Move Row Down"));
+	moveRowUp = new QPushButton(tr("Move Up"));
+	moveRowDown = new QPushButton(tr("Move Down"));
 	insertImage = new QPushButton(tr("Insert Image"));
 	insertRow->setEnabled(false);
 	removeRow->setEnabled(false);
@@ -141,11 +145,13 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	mainLayout->addWidget(mediaTable, 4, 0, 1, 4);
 	mainLayout->addWidget(addMediaItem, 5, 0, 1, 2);
 	mainLayout->addWidget(rmMediaItem, 5, 2, 1, 2);
-	mainLayout->addWidget(editTable, 6, 0, 1, 4);
-	mainLayout->addWidget(insertRow, 7, 0, 1, 2);
-	mainLayout->addWidget(removeRow, 7, 2, 1, 2);
-	mainLayout->addWidget(moveRowUp, 8, 0, 1, 2);
-	mainLayout->addWidget(moveRowDown, 8, 2, 1, 2);
-	mainLayout->addWidget(insertImage, 9, 0, 1, 4);
+	mainLayout->addWidget(mvMediaRowUp, 6, 0, 1, 2);
+	mainLayout->addWidget(mvMediaRowDown, 6, 2, 1, 2);
+	mainLayout->addWidget(editTable, 7, 0, 1, 4);
+	mainLayout->addWidget(insertRow, 8, 0, 1, 2);
+	mainLayout->addWidget(removeRow, 8, 2, 1, 2);
+	mainLayout->addWidget(moveRowUp, 9, 0, 1, 2);
+	mainLayout->addWidget(moveRowDown, 9, 2, 1, 2);
+	mainLayout->addWidget(insertImage, 10, 0, 1, 4);
 	setLayout(mainLayout);
 }
