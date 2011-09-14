@@ -53,17 +53,19 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	//create media tab widgets
 	mediaTable = new QTableWidget(this);
 	mediaTable->setRowCount(0);
-	mediaTable->setColumnCount(4);
+	mediaTable->setColumnCount(5);
 	mediaTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 	mediaTable->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-	QTableWidgetItem *mediaheader0 = new QTableWidgetItem(tr("Extension"));
+	QTableWidgetItem *mediaheader0 = new QTableWidgetItem(tr("Preview"));
 	mediaTable->setHorizontalHeaderItem(0, mediaheader0);
-	QTableWidgetItem *mediaheader1 = new QTableWidgetItem(tr("Source"));
+	QTableWidgetItem *mediaheader1 = new QTableWidgetItem(tr("Extension"));
 	mediaTable->setHorizontalHeaderItem(1, mediaheader1);
-	QTableWidgetItem *mediaheader2 = new QTableWidgetItem(tr("Licence"));
+	QTableWidgetItem *mediaheader2 = new QTableWidgetItem(tr("Source"));
 	mediaTable->setHorizontalHeaderItem(2, mediaheader2);
-	QTableWidgetItem *mediaheader3 = new QTableWidgetItem(tr("Used?"));
+	QTableWidgetItem *mediaheader3 = new QTableWidgetItem(tr("Licence"));
 	mediaTable->setHorizontalHeaderItem(3, mediaheader3);
+	QTableWidgetItem *mediaheader4 = new QTableWidgetItem(tr("Used?"));
+	mediaTable->setHorizontalHeaderItem(4, mediaheader4);
 	mediaTable->resizeColumnsToContents();
 	mediaTable->resizeRowsToContents();
 	mediaTable->setEnabled(false);

@@ -135,7 +135,7 @@ class YCQuiz : public QWidget {
 		}
 		void moveTheRowUp() {
 			int i = editTable->currentRow();
-			if (i != -1 && i && editTable->rowCount() > 1) {
+			if (i > 0) {
 
 				//make/prepare variables
 				int col1, col5;
@@ -228,6 +228,10 @@ class YCQuiz : public QWidget {
 				//set current cell to row below
 				editTable->setCurrentCell(i+1, editTable->currentColumn());
 			}
+		}
+		void moveTheMediaRowUp() {
+			//system("mv old tmp ; mv new old ; mv tmp new");
+			//update quiz image to reflect change
 		}
 		void exportMP3() {
 
@@ -584,7 +588,7 @@ class YCQuiz : public QWidget {
 			fileIsLoaded->setChecked(false);
 			if (!(theFilePath->text().isNull())) {
 				FILE *file;
-				char indexXMLChunk[STRLEN], qOrA[STRLEN], untarStr[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN], content[STRLEN];
+				char indexXMLChunk[STRLEN], qOrA[STRLEN], untarStr[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN], content[STRLEN], imageloc[STRLEN];
 				int ctr=0, currCol=0, mediaRows=0;
 				questionsAndAnswersList->clear();
 
@@ -708,11 +712,12 @@ class YCQuiz : public QWidget {
 				//populate media table based on index.xml
 				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "r");
 				mediaTable->clear();
-				mediaTable->setColumnCount(4);
-				mediaTable->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Extension")));
-				mediaTable->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Source")));
-				mediaTable->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Licence")));
-				mediaTable->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Used?")));
+				mediaTable->setColumnCount(5);
+				mediaTable->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Preview")));
+				mediaTable->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Extension")));
+				mediaTable->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Source")));
+				mediaTable->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Licence")));
+				mediaTable->setHorizontalHeaderItem(4, new QTableWidgetItem(tr("Used?")));
 				if (file != NULL) {
 					memset(indexXMLChunk, 0, STRLEN);
 					while (fgets(indexXMLChunk, STRLEN, file)) {
@@ -731,17 +736,25 @@ class YCQuiz : public QWidget {
 					while (ctr < mediaRows && fgets(indexXMLChunk, STRLEN, file)) {
 						if (strchr(indexXMLChunk, '\n') != NULL) {
 							if (!currCol && extractXMLContent(indexXMLChunk, "extension", content)) {
+								memset(imageloc, 0, STRLEN);
+								sprintf(imageloc, "/var/tmp/yellowcot_quiz/media/%i.%s", ctr + 1, content);
+								QTableWidgetItem *mediaCell = new QTableWidgetItem();
+								mediaCell->setData(Qt::DecorationRole, QPixmap(imageloc).scaledToHeight(50, Qt::SmoothTransformation));
+								mediaCell->setFlags(mediaCell->flags() & ~Qt::ItemIsEditable);
+								mediaTable->setItem(ctr, currCol++, mediaCell);
+								QTableWidgetItem *mediaCell2 = new QTableWidgetItem(QString::fromUtf8(content));
+								mediaCell2->setFlags(mediaCell2->flags() & ~Qt::ItemIsEditable);
+								mediaTable->setItem(ctr, currCol++, mediaCell2);
+							}
+							else if (currCol == 2 && extractXMLContent(indexXMLChunk, "src", content)) {
 								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
 								mediaTable->setItem(ctr, currCol++, mediaCell);
 							}
-							else if (currCol == 1 && extractXMLContent(indexXMLChunk, "src", content)) {
-								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
-								mediaTable->setItem(ctr, currCol++, mediaCell);
-							}
-							else if (currCol == 2 && extractXMLContent(indexXMLChunk, "licence", content)) {
+							else if (currCol == 3 && extractXMLContent(indexXMLChunk, "licence", content)) {
 								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
 								mediaTable->setItem(ctr, currCol++, mediaCell);
 								QTableWidgetItem *mediaCell2 = new QTableWidgetItem(QString::fromUtf8("N"));
+								mediaCell2->setFlags(mediaCell2->flags() & ~Qt::ItemIsEditable);
 								mediaTable->setItem(ctr++, currCol, mediaCell2);
 								currCol = 0;
 							}
