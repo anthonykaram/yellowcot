@@ -230,8 +230,16 @@ class YCQuiz : public QWidget {
 			}
 		}
 		void moveTheMediaRowUp() {
-			//system("mv old tmp ; mv new old ; mv tmp new");
-			//update quiz image to reflect change
+			int i = mediaTable->currentRow();
+			if (i > 0) {
+				char str[STRLEN];
+				memset(str, 0, STRLEN);
+				sprintf(str, "mv /var/tmp/yellowcot_quiz/media/%i.* /var/tmp/yellowcot_quiz/media/tmp", i+1);
+				system(str);
+
+				//system("mv old tmp ; mv new old ; mv tmp new");
+				//update quiz image to reflect change
+			}
 		}
 		void exportMP3() {
 
