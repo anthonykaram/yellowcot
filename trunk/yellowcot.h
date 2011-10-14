@@ -229,13 +229,30 @@ class YCQuiz : public QWidget {
 				editTable->setCurrentCell(i+1, editTable->currentColumn());
 			}
 		}
+		void swapTwoMediaFiles(int first , int second) {
+
+			//make string
+			char str[STRLEN];
+
+			//mv second to tmp
+			memset(str, 0, STRLEN);
+			sprintf(str, "for f in /var/tmp/yellowcot_quiz/media/%i.* ; do ext=${f##*.} ; mv $f /var/tmp/yellowcot_quiz/media/tmp.$ext ; done", second);
+			system(str);
+
+			//mv first to second
+			memset(str, 0, STRLEN);
+			sprintf(str, "for f in /var/tmp/yellowcot_quiz/media/%i.* ; do ext=${f##*.} ; mv $f /var/tmp/yellowcot_quiz/media/%i.$ext ; done", first, second);
+			system(str);
+
+			//mv tmp to first
+			memset(str, 0, STRLEN);
+			sprintf(str, "for f in /var/tmp/yellowcot_quiz/media/tmp.* ; do ext=${f##*.} ; mv $f /var/tmp/yellowcot_quiz/media/%i.$ext ; done", first);
+			system(str);
+		}
 		void moveTheMediaRowUp() {
 			int i = mediaTable->currentRow();
 			if (i > 0) {
-				char str[STRLEN];
-				memset(str, 0, STRLEN);
-				sprintf(str, "mv /var/tmp/yellowcot_quiz/media/%i.* /var/tmp/yellowcot_quiz/media/tmp", i+1);
-				system(str);
+				swapTwoMediaFiles(i, i+1);
 
 				//system("mv old tmp ; mv new old ; mv tmp new");
 				//update quiz image to reflect change
