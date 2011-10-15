@@ -133,7 +133,7 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 
 	//move a media row depending on which button is clicked
 	connect(mvMediaRowUp, SIGNAL(clicked()), this, SLOT(moveTheMediaRowUp()));
-	//connect(mvMediaRowDown, SIGNAL(clicked()), this, SLOT(moveTheRowDown()));
+	connect(mvMediaRowDown, SIGNAL(clicked()), this, SLOT(moveTheMediaRowDown()));
 
 	//insert an image if the button is clicked
 	connect(insertImage, SIGNAL(clicked()), this, SLOT(insertAnImage()));
