@@ -29,6 +29,7 @@
 #define MINWIDTH 500
 #define MINHEIGHT 300
 #define IMAGEBORDER 12
+#define TMPDIR "/var/tmp/yellowcot_quiz"
 
 class YCQuiz : public QWidget {
 	Q_OBJECT
@@ -236,25 +237,81 @@ class YCQuiz : public QWidget {
 
 			//mv second to tmp
 			memset(str, 0, STRLEN);
-			sprintf(str, "for f in /var/tmp/yellowcot_quiz/media/%i.* ; do ext=${f##*.} ; mv $f /var/tmp/yellowcot_quiz/media/tmp.$ext ; done", second);
+			sprintf(str, "for f in %s/media/%i.* ; do ext=${f##*.} ; mv $f %s/media/tmp.$ext ; done", TMPDIR, second, TMPDIR);
 			system(str);
 
 			//mv first to second
 			memset(str, 0, STRLEN);
-			sprintf(str, "for f in /var/tmp/yellowcot_quiz/media/%i.* ; do ext=${f##*.} ; mv $f /var/tmp/yellowcot_quiz/media/%i.$ext ; done", first, second);
+			sprintf(str, "for f in %s/media/%i.* ; do ext=${f##*.} ; mv $f %s/media/%i.$ext ; done", TMPDIR, first, TMPDIR, second);
 			system(str);
 
 			//mv tmp to first
 			memset(str, 0, STRLEN);
-			sprintf(str, "for f in /var/tmp/yellowcot_quiz/media/tmp.* ; do ext=${f##*.} ; mv $f /var/tmp/yellowcot_quiz/media/%i.$ext ; done", first);
+			sprintf(str, "for f in %s/media/tmp.* ; do ext=${f##*.} ; mv $f %s/media/%i.$ext ; done", TMPDIR, TMPDIR, first);
 			system(str);
 		}
 		void moveTheMediaRowUp() {
 			int i = mediaTable->currentRow();
 			if (i > 0) {
+
+				//swap actual media files in temp directory
 				swapTwoMediaFiles(i, i+1);
 
-				//system("mv old tmp ; mv new old ; mv tmp new");
+/*
+				//make/prepare variables
+				int col1, col5;
+				char str2[STRLEN], str3[STRLEN], str4[STRLEN], str6[STRLEN], str7[STRLEN], str8[STRLEN];
+				memset(str2, 0, STRLEN);
+				memset(str3, 0, STRLEN);
+				memset(str4, 0, STRLEN);
+				memset(str6, 0, STRLEN);
+				memset(str7, 0, STRLEN);
+				memset(str8, 0, STRLEN);
+
+				//record data in row
+				col1 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->currentIndex();
+				sprintf(str2, editTable->item(i, 1)->text().toUtf8().data());
+				sprintf(str3, editTable->item(i, 2)->text().toUtf8().data());
+				sprintf(str4, editTable->item(i, 3)->text().toUtf8().data());
+				col5 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->currentIndex();
+				sprintf(str6, editTable->item(i, 5)->text().toUtf8().data());
+				sprintf(str7, editTable->item(i, 6)->text().toUtf8().data());
+				sprintf(str8, editTable->item(i, 7)->text().toUtf8().data());
+
+				//overwrite row with data from row above
+				qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 0))->currentIndex());
+				editTable->item(i, 1)->setText(editTable->item(i-1, 1)->text());
+				editTable->item(i, 2)->setText(editTable->item(i-1, 2)->text());
+				editTable->item(i, 3)->setText(editTable->item(i-1, 3)->text());
+				qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 4))->currentIndex());
+				editTable->item(i, 5)->setText(editTable->item(i-1, 5)->text());
+				editTable->item(i, 6)->setText(editTable->item(i-1, 6)->text());
+				editTable->item(i, 7)->setText(editTable->item(i-1, 7)->text());
+
+				//write data from variables into row above
+				qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 0))->setCurrentIndex(col1);
+				editTable->item(i-1, 1)->setText(QString::fromUtf8(str2));
+				editTable->item(i-1, 2)->setText(QString::fromUtf8(str3));
+				editTable->item(i-1, 3)->setText(QString::fromUtf8(str4));
+				qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 4))->setCurrentIndex(col5);
+				editTable->item(i-1, 5)->setText(QString::fromUtf8(str6));
+				editTable->item(i-1, 6)->setText(QString::fromUtf8(str7));
+				editTable->item(i-1, 7)->setText(QString::fromUtf8(str8));
+
+				//set current cell to row above
+				editTable->setCurrentCell(i-1, editTable->currentColumn());
+
+*/
+				//update quiz image to reflect change
+			}
+		}
+		void moveTheMediaRowDown() {
+			int i = mediaTable->currentRow();
+			if (i != -1 && i != mediaTable->rowCount() - 1) {
+
+				//swap actual media files in temp directory
+				swapTwoMediaFiles(i+1, i+2);
+
 				//update quiz image to reflect change
 			}
 		}
@@ -277,7 +334,7 @@ class YCQuiz : public QWidget {
 			for (int i = 0 ; i < numqs * numinstances ; i++) {
 				x = (int)((double)rand() * numqs / RAND_MAX + 1);
 				memset(str, 0, STRLEN);
-				sprintf(str, "echo \"%s\" | text2wave -o /var/tmp/yellowcot_quiz/question.wav", questionsAndAnswersList->itemText(x * 8 - 7).toUtf8().data());
+				sprintf(str, "echo \"%s\" | text2wave -o %s/question.wav", questionsAndAnswersList->itemText(x * 8 - 7).toUtf8().data(), TMPDIR);
 				system(str);
 				system("sox /var/tmp/yellowcot_quiz/out.wav /var/tmp/yellowcot_quiz/question.wav /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out2.wav");
 				system("mv /var/tmp/yellowcot_quiz/out2.wav /var/tmp/yellowcot_quiz/out.wav");
@@ -638,7 +695,7 @@ class YCQuiz : public QWidget {
 				moveRowDown->setEnabled(true);
 				insertImage->setEnabled(true);
 				memset(untarStr, 0, STRLEN);
-				sprintf(untarStr, "rm -r /var/tmp/yellowcot_quiz/* > /dev/null 2>&1 ; tar xf \"%s\" -C /var/tmp/yellowcot_quiz ; ", theFilePath->text().toUtf8().data());
+				sprintf(untarStr, "rm -r %s/* > /dev/null 2>&1 ; tar xf \"%s\" -C %s ; ", TMPDIR, theFilePath->text().toUtf8().data(), TMPDIR);
 				system(untarStr);
 
 				//read in data (old code)
@@ -762,7 +819,7 @@ class YCQuiz : public QWidget {
 						if (strchr(indexXMLChunk, '\n') != NULL) {
 							if (!currCol && extractXMLContent(indexXMLChunk, "extension", content)) {
 								memset(imageloc, 0, STRLEN);
-								sprintf(imageloc, "/var/tmp/yellowcot_quiz/media/%i.%s", ctr + 1, content);
+								sprintf(imageloc, "%s/media/%i.%s", TMPDIR, ctr + 1, content);
 								QTableWidgetItem *mediaCell = new QTableWidgetItem();
 								mediaCell->setData(Qt::DecorationRole, QPixmap(imageloc).scaledToHeight(50, Qt::SmoothTransformation));
 								mediaCell->setFlags(mediaCell->flags() & ~Qt::ItemIsEditable);
@@ -800,7 +857,7 @@ class YCQuiz : public QWidget {
 			char str[STRLEN], newStr[STRLEN];
 			if (!strncmp(questionsAndAnswersList->itemText(questionsAndAnswersList->currentIndex() - 1).toUtf8().data(), "image", STRLEN)) {
 				memset(str, 0, STRLEN);
-				sprintf(str, "/var/tmp/yellowcot_quiz/i/%s", questionsAndAnswersList->currentText().toUtf8().data());
+				sprintf(str, "%s/i/%s", TMPDIR, questionsAndAnswersList->currentText().toUtf8().data());
 				currQorA->setIcon(QIcon(QPixmap(str).scaled(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
 				currQorA->setIconSize(QSize(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER));
 			}
