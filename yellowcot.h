@@ -23,14 +23,7 @@
 #include <QtGui>
 #include <cstdlib>
 #include <sys/time.h>
-#include "sysprintf.h"
-
-#define VERSION "1.2.0"
-#define STRLEN 1000
-#define MINWIDTH 500
-#define MINHEIGHT 300
-#define IMAGEBORDER 12
-#define TMPDIR "/var/tmp/yellowcot_quiz"
+#include "pound_defs_and_sysprintf.h"
 
 class YCQuiz : public QWidget {
 	Q_OBJECT
@@ -69,7 +62,6 @@ class YCQuiz : public QWidget {
 		void resizeEvent(QResizeEvent *event) {
 			updateButtonContents();
 			QWidget::resizeEvent(event);
-printf ("%d\n", sysprintf(3, 5, 5, 6));
 		}
 		void respondToStartChange() {
 			if (!fileIsLoaded->isChecked())
@@ -234,23 +226,14 @@ printf ("%d\n", sysprintf(3, 5, 5, 6));
 		}
 		void swapTwoMediaFiles(int first , int second) {
 
-			//make string
-			char str[STRLEN];
-
 			//mv second to tmp
-			memset(str, 0, STRLEN);
-			sprintf(str, "for f in %s/media/%i.* ; do ext=${f##*.} ; mv $f %s/media/tmp.$ext ; done", TMPDIR, second, TMPDIR);
-			system(str);
+			sysprintf("for f in %s/media/%i.* ; do ext=${f##*.} ; mv $f %s/media/tmp.$ext ; done", TMPDIR, second, TMPDIR);
 
 			//mv first to second
-			memset(str, 0, STRLEN);
-			sprintf(str, "for f in %s/media/%i.* ; do ext=${f##*.} ; mv $f %s/media/%i.$ext ; done", TMPDIR, first, TMPDIR, second);
-			system(str);
+			sysprintf("for f in %s/media/%i.* ; do ext=${f##*.} ; mv $f %s/media/%i.$ext ; done", TMPDIR, first, TMPDIR, second);
 
 			//mv tmp to first
-			memset(str, 0, STRLEN);
-			sprintf(str, "for f in %s/media/tmp.* ; do ext=${f##*.} ; mv $f %s/media/%i.$ext ; done", TMPDIR, TMPDIR, first);
-			system(str);
+			sysprintf("for f in %s/media/tmp.* ; do ext=${f##*.} ; mv $f %s/media/%i.$ext ; done", TMPDIR, TMPDIR, first);
 		}
 		void moveTheMediaRowUp() {
 			int i = mediaTable->currentRow();
@@ -331,8 +314,8 @@ printf ("%d\n", sysprintf(3, 5, 5, 6));
 			srand((int)tv.tv_usec);
 
 			//create the mp3
-			system("sox -r 16k -n /var/tmp/yellowcot_quiz/silence.wav trim 0 5");
-			system("cp /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out.wav");
+			sysprintf("sox -r 16k -n %s/silence.wav trim 0 5", TMPDIR);
+			sysprintf("cp %s/silence.wav %s/out.wav", TMPDIR, TMPDIR);
 			for (int i = 0 ; i < numqs * numinstances ; i++) {
 				x = (int)((double)rand() * numqs / RAND_MAX + 1);
 				memset(str, 0, STRLEN);
