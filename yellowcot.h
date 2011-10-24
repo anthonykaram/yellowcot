@@ -23,6 +23,7 @@
 #include <QtGui>
 #include <cstdlib>
 #include <sys/time.h>
+#include "sysprintf.h"
 
 #define VERSION "1.2.0"
 #define STRLEN 1000
@@ -68,6 +69,7 @@ class YCQuiz : public QWidget {
 		void resizeEvent(QResizeEvent *event) {
 			updateButtonContents();
 			QWidget::resizeEvent(event);
+printf ("%d\n", sysprintf(3, 5, 5, 6));
 		}
 		void respondToStartChange() {
 			if (!fileIsLoaded->isChecked())
