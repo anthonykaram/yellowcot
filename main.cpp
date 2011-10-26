@@ -49,14 +49,16 @@ int main(int argc, char *argv[]) {
 
 	//create config file if it doesn't already exist
 	sysprintf("cp ~/.yellowcot/config %s/config > /dev/null 2>&1", TMPDIR);
-	if ((file = fopen("/var/tmp/yellowcot_quiz/config", "r"))) {
+	memset(str, 0, STRLEN);
+	sprintf(str, "%s/config", TMPDIR);
+	if ((file = fopen(str, "r"))) {
 		fclose(file);
-		remove("/var/tmp/yellowcot_quiz/config");
+		remove(str);
 	}
 	else {
-		system("echo -e \"# Yellowcot configuration file\n#\n# If you'd like to use a font other than the default, specify\n# its path (e.g. /usr/local/share/fonts/c/code2000.ttf) here.\n#font=\n# Specify the font size here.\nfontsize=20\" > /var/tmp/yellowcot_quiz/config");
-		system("mkdir ~/.yellowcot");
-		system("mv /var/tmp/yellowcot_quiz/config ~/.yellowcot/config");
+		sysprintf("echo -e \"# Yellowcot configuration file\n#\n# If you'd like to use a font other than the default, specify\n# its path (e.g. /usr/local/share/fonts/c/code2000.ttf) here.\n#font=\n# Specify the font size here.\nfontsize=20\" > %s/config", TMPDIR);
+		sysprintf("mkdir ~/.yellowcot");
+		sysprintf("mv %s/config ~/.yellowcot/config", TMPDIR);
 	}
 
 	//start translator
