@@ -306,7 +306,6 @@ class YCQuiz : public QWidget {
 			timeval tv;
 			int x;
 			int numqs = questionsAndAnswersList->count() / 8;
-			char str[STRLEN];
 			int numinstances = 3;
 
 			//generate new random seed based on microseconds since UNIX epoch
@@ -318,18 +317,14 @@ class YCQuiz : public QWidget {
 			sysprintf("cp %s/silence.wav %s/out.wav", TMPDIR, TMPDIR);
 			for (int i = 0 ; i < numqs * numinstances ; i++) {
 				x = (int)((double)rand() * numqs / RAND_MAX + 1);
-				memset(str, 0, STRLEN);
-				sprintf(str, "echo \"%s\" | text2wave -o %s/question.wav", questionsAndAnswersList->itemText(x * 8 - 7).toUtf8().data(), TMPDIR);
-				system(str);
-				system("sox /var/tmp/yellowcot_quiz/out.wav /var/tmp/yellowcot_quiz/question.wav /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out2.wav");
-				system("mv /var/tmp/yellowcot_quiz/out2.wav /var/tmp/yellowcot_quiz/out.wav");
-				memset(str, 0, STRLEN);
-				sprintf(str, "echo \"%s\" | text2wave -o /var/tmp/yellowcot_quiz/answer.wav", questionsAndAnswersList->itemText(x * 8 - 3).toUtf8().data());
-				system(str);
-				system("sox /var/tmp/yellowcot_quiz/out.wav /var/tmp/yellowcot_quiz/answer.wav /var/tmp/yellowcot_quiz/silence.wav /var/tmp/yellowcot_quiz/out2.wav");
-				system("mv /var/tmp/yellowcot_quiz/out2.wav /var/tmp/yellowcot_quiz/out.wav");
+				sysprintf("echo \"%s\" | text2wave -o %s/question.wav", questionsAndAnswersList->itemText(x * 8 - 7).toUtf8().data(), TMPDIR);
+				sysprintf("sox %s/out.wav %s/question.wav %s/silence.wav %s/out2.wav", TMPDIR, TMPDIR, TMPDIR, TMPDIR);
+				sysprintf("mv %s/out2.wav %s/out.wav", TMPDIR, TMPDIR);
+				sysprintf("echo \"%s\" | text2wave -o %s/answer.wav", questionsAndAnswersList->itemText(x * 8 - 3).toUtf8().data(), TMPDIR);
+				sysprintf("sox %s/out.wav %s/answer.wav %s/silence.wav %s/out2.wav", TMPDIR, TMPDIR, TMPDIR, TMPDIR);
+				sysprintf("mv %s/out2.wav %s/out.wav", TMPDIR, TMPDIR);
 			}
-			system("lame /var/tmp/yellowcot_quiz/out.wav ~/ycquiz.mp3 ; rm /var/tmp/yellowcot_quiz/*.wav");
+			sysprintf("lame %s/out.wav ~/ycquiz.mp3 ; rm %s/*.wav", TMPDIR, TMPDIR);
 
 			//tell the user of the success
 			QMessageBox::information(this, tr("Export to MP3"), tr("Yellowcot quiz successfully exported to: ~/ycquiz.mp3"));
@@ -341,10 +336,12 @@ class YCQuiz : public QWidget {
 				char str[STRLEN];
 				FILE *file;
 				FILE *file2;
-				system("mv /var/tmp/yellowcot_quiz/i /var/tmp/yellowcot_quiz/i_backup");
-				system("mkdir /var/tmp/yellowcot_quiz/i");
-				system("echo \"<?xml version=\\\"1.0\\\"?>\" > /var/tmp/yellowcot_quiz/index.xml");
-				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "a+");
+				sysprintf("mv %s/i %s/i_backup", TMPDIR, TMPDIR);
+				sysprintf("mkdir %s/i", TMPDIR);
+				sysprintf("echo \"<?xml version=\\\"1.0\\\"?>\" > %s/index.xml", TMPDIR);
+				memset(str, 0, STRLEN);
+				sprintf(str, "%s/index.xml", TMPDIR);
+				file = fopen(str, "a+");
 				fprintf(file, "<quiz>\n");
 				for (i = 0; i < editTable->rowCount(); i++) {
 
@@ -354,19 +351,15 @@ class YCQuiz : public QWidget {
 					//store question type and question content
 					if (qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->currentIndex()) {
 						memset(str, 0, STRLEN);
-						sprintf(str, "/var/tmp/yellowcot_quiz/i_backup/%s", (editTable->item(i, 1))->text().toUtf8().data());
+						sprintf(str, "%s/i_backup/%s", TMPDIR, (editTable->item(i, 1))->text().toUtf8().data());
 						if ((file2 = fopen(str, "r"))) {
 							fclose(file2);
-							memset(str, 0, STRLEN);
-							sprintf(str, "cp \"/var/tmp/yellowcot_quiz/i_backup/%s\" /var/tmp/yellowcot_quiz/i/.", (editTable->item(i, 1))->text().toUtf8().data());
-							system(str);
+							sysprintf("cp \"%s/i_backup/%s\" %s/i/.", TMPDIR, (editTable->item(i, 1))->text().toUtf8().data(), TMPDIR);
 							fprintf(file, "		<q type=\"image\">%s</q>\n", (editTable->item(i, 1))->text().toUtf8().data());
 						}
 						else if ((file2 = fopen((editTable->item(i, 1))->text().toUtf8().data(), "r"))) {
 							fclose(file2);
-							memset(str, 0, STRLEN);
-							sprintf(str, "cp \"%s\" /var/tmp/yellowcot_quiz/i/.", (editTable->item(i, 1))->text().toUtf8().data());
-							system(str);
+							sysprintf("cp \"%s\" %s/i/.", (editTable->item(i, 1))->text().toUtf8().data(), TMPDIR);
 							extractFileName((editTable->item(i, 1))->text().toUtf8().data(), str);
 							fprintf(file, "		<q type=\"image\">%s</q>\n", str);
 						}
@@ -389,19 +382,15 @@ class YCQuiz : public QWidget {
 					//store answer type and answer content
 					if (qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->currentIndex()) {
 						memset(str, 0, STRLEN);
-						sprintf(str, "/var/tmp/yellowcot_quiz/i_backup/%s", (editTable->item(i, 5))->text().toUtf8().data());
+						sprintf(str, "%s/i_backup/%s", TMPDIR, (editTable->item(i, 5))->text().toUtf8().data());
 						if ((file2 = fopen(str, "r"))) {
 							fclose(file2);
-							memset(str, 0, STRLEN);
-							sprintf(str, "cp \"/var/tmp/yellowcot_quiz/i_backup/%s\" /var/tmp/yellowcot_quiz/i/.", (editTable->item(i, 5))->text().toUtf8().data());
-							system(str);
+							sysprintf("cp \"%s/i_backup/%s\" %s/i/.", TMPDIR, (editTable->item(i, 5))->text().toUtf8().data(), TMPDIR);
 							fprintf(file, "		<a type=\"image\">%s</a>\n", (editTable->item(i, 5))->text().toUtf8().data());
 						}
 						else if ((file2 = fopen((editTable->item(i, 5))->text().toUtf8().data(), "r"))) {
 							fclose(file2);
-							memset(str, 0, STRLEN);
-							sprintf(str, "cp \"%s\" /var/tmp/yellowcot_quiz/i/.", (editTable->item(i, 5))->text().toUtf8().data());
-							system(str);
+							sysprintf("cp \"%s\" %s/i/.", (editTable->item(i, 5))->text().toUtf8().data(), TMPDIR);
 							extractFileName((editTable->item(i, 5))->text().toUtf8().data(), str);
 							fprintf(file, "		<a type=\"image\">%s</a>\n", str);
 						}
@@ -424,12 +413,10 @@ class YCQuiz : public QWidget {
 					//end qa section
 					fprintf(file, "	</qa>\n");
 				}
-				system("rm -r /var/tmp/yellowcot_quiz/i_backup");
+				sysprintf("rm -r %s/i_backup", TMPDIR);
 				fprintf(file, "</quiz>");
 				fclose(file);
-				memset(str, 0, STRLEN);
-				sprintf(str, "rm \"%s\" ; cd /var/tmp/yellowcot_quiz ; tar cf \"%s\" --exclude=text.png *", theFilePath->text().toUtf8().data(), theFilePath->text().toUtf8().data());
-				system(str);
+				sysprintf("rm \"%s\" ; cd %s ; tar cf \"%s\" --exclude=text.png *", theFilePath->text().toUtf8().data(), TMPDIR, theFilePath->text().toUtf8().data());
 				memset(str, 0, STRLEN);
 				sprintf(str, "File saved to %s.", theFilePath->text().toUtf8().data());
 				QMessageBox::information(this, tr("Save"), str);
@@ -655,7 +642,7 @@ class YCQuiz : public QWidget {
 			fileIsLoaded->setChecked(false);
 			if (!(theFilePath->text().isNull())) {
 				FILE *file;
-				char indexXMLChunk[STRLEN], qOrA[STRLEN], untarStr[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN], content[STRLEN], imageloc[STRLEN];
+				char str[STRLEN], indexXMLChunk[STRLEN], qOrA[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN], content[STRLEN], imageloc[STRLEN];
 				int ctr=0, currCol=0, mediaRows=0;
 				questionsAndAnswersList->clear();
 
@@ -679,12 +666,12 @@ class YCQuiz : public QWidget {
 				moveRowUp->setEnabled(true);
 				moveRowDown->setEnabled(true);
 				insertImage->setEnabled(true);
-				memset(untarStr, 0, STRLEN);
-				sprintf(untarStr, "rm -r %s/* > /dev/null 2>&1 ; tar xf \"%s\" -C %s ; ", TMPDIR, theFilePath->text().toUtf8().data(), TMPDIR);
-				system(untarStr);
+				sysprintf("rm -r %s/* > /dev/null 2>&1 ; tar xf \"%s\" -C %s ; ", TMPDIR, theFilePath->text().toUtf8().data(), TMPDIR);
 
 				//read in data (old code)
-				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "r");
+				memset(str, 0, STRLEN);
+				sprintf(str, "%s/index.xml", TMPDIR);
+				file = fopen(str, "r");
 				if (file != NULL) {
 					memset(qOrA, 0, STRLEN);
 					while (fgets(qOrA, STRLEN, file)) {
@@ -777,7 +764,9 @@ class YCQuiz : public QWidget {
 				editTable->resizeRowsToContents();
 
 				//populate media table based on index.xml
-				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "r");
+				memset(str, 0, STRLEN);
+				sprintf(str, "%s/index.xml", TMPDIR);
+				file = fopen(str, "r");
 				mediaTable->clear();
 				mediaTable->setColumnCount(5);
 				mediaTable->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Preview")));
@@ -797,7 +786,9 @@ class YCQuiz : public QWidget {
 				}
 				mediaTable->setRowCount(mediaRows);
 				ctr = 0;
-				file = fopen("/var/tmp/yellowcot_quiz/index.xml", "r");
+				memset(str, 0, STRLEN);
+				sprintf(str, "%s/index.xml", TMPDIR);
+				file = fopen(str, "r");
 				if (file != NULL) {
 					memset(indexXMLChunk, 0, STRLEN);
 					while (ctr < mediaRows && fgets(indexXMLChunk, STRLEN, file)) {
@@ -847,12 +838,12 @@ class YCQuiz : public QWidget {
 				currQorA->setIconSize(QSize(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER));
 			}
 			else {
-				memset(str, 0, STRLEN);
 				memset(newStr, 0, STRLEN);
 				addSlashes(questionsAndAnswersList->currentText().toUtf8().data(), newStr);
-				sprintf(str, "font=$(more ~/.yellowcot/config | grep \"font=\") ; fontsize=$(more ~/.yellowcot/config | grep \"fontsize=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" /var/tmp/yellowcot_quiz/text.png ; else convert -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" /var/tmp/yellowcot_quiz/text.png ; fi", buttonWidth - IMAGEBORDER, newStr, buttonWidth - IMAGEBORDER, newStr);
-				system(str);
-				currQorA->setIcon(QIcon(QPixmap("/var/tmp/yellowcot_quiz/text.png").scaled(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
+				sysprintf("font=$(more ~/.yellowcot/config | grep \"font=\") ; fontsize=$(more ~/.yellowcot/config | grep \"fontsize=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" %s/text.png ; else convert -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" %s/text.png ; fi", buttonWidth - IMAGEBORDER, newStr, TMPDIR, buttonWidth - IMAGEBORDER, newStr, TMPDIR);
+				memset(newStr, 0, STRLEN);
+				sprintf(newStr, "%s/text.png", TMPDIR);
+				currQorA->setIcon(QIcon(QPixmap(newStr).scaled(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
 				currQorA->setIconSize(QSize(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER));
 			}
 		}
