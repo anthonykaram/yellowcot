@@ -27,21 +27,28 @@ int main(int argc, char *argv[]) {
 	//define qapplication class
 	QApplication app(argc, argv);
 
+	//make string variable
+	char str[STRLEN];
+
 	//make file object
 	FILE *file;
 
 	//quit if it is not the only Yellowcot instance
-	if ((file = fopen("/var/tmp/yellowcot_quiz", "r"))) {
-		QMessageBox::critical(0, QString("Fatal Error"), QString("Multiple, simultaneous instances of Yellowcot is not yet a supported feature. If you are certain another instance is not running, you may execute \"sudo rm -r /var/tmp/yellowcot_quiz\"."));
+	memset(str, 0, STRLEN);
+	sprintf(str, "%s", TMPDIR);
+	if ((file = fopen(str, "r"))) {
+		memset(str, 0, STRLEN);
+		sprintf(str, "Multiple, simultaneous instances of Yellowcot is not yet a supported feature. If you are certain another instance is not running, you may execute \"sudo rm -r %s\".", TMPDIR);
+		QMessageBox::critical(0, QString("Fatal Error"), QString(str));
 		return 1;
 		fclose (file);
 	}
 
 	//create temporary directory for yellowcot quiz
-	system("mkdir /var/tmp/yellowcot_quiz");
+	sysprintf("mkdir %s", TMPDIR);
 
 	//create config file if it doesn't already exist
-	system("cp ~/.yellowcot/config /var/tmp/yellowcot_quiz/config > /dev/null 2>&1");
+	sysprintf("cp ~/.yellowcot/config %s/config > /dev/null 2>&1", TMPDIR);
 	if ((file = fopen("/var/tmp/yellowcot_quiz/config", "r"))) {
 		fclose(file);
 		remove("/var/tmp/yellowcot_quiz/config");
