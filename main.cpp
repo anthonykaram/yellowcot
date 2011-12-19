@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 		remove(str);
 	}
 	else {
-		sysprintf("echo -e \"# Yellowcot configuration file\n#\n# If you'd like to use a font other than the default, specify\n# its path (e.g. /usr/local/share/fonts/c/code2000.ttf) here.\n#font=\n# Specify the font size here.\nfontsize=20\" > %s/config", TMPDIR);
+		sysprintf("echo -e \"# Yellowcot configuration file\n#\n# If you'd like to use a font other than the default, specify\n# its path (e.g. /usr/local/share/fonts/c/code2000.ttf) here.\n#font=\n# Specify the font size here.\nfontsize=24\" > %s/config", TMPDIR);
 		sysprintf("mkdir ~/.yellowcot");
 		sysprintf("mv %s/config ~/.yellowcot/config", TMPDIR);
 	}
