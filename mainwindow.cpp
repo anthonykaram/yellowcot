@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.0, released YYYY-MM-DD
+	Yellowcot 1.2.0, released 2011-12-26
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -31,11 +31,6 @@ MainWindow::MainWindow() {
 
 	//create and populate file menu in menu bar
 	QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
-	QAction *newAct = new QAction(QtIconLoader::icon("document-new"), tr("&New"), this);
-	connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
-	newAct->setShortcut(tr("Ctrl+N", "New"));
-	fileMenu->addAction(newAct);
-	fileMenu->addSeparator();
 	QAction *openAct = new QAction(QtIconLoader::icon("document-open"), tr("&Open"), this);
 	connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 	QSignalMapper *signalMapper1 = new QSignalMapper(this);
@@ -56,16 +51,6 @@ MainWindow::MainWindow() {
 	connect(signalMapper3, SIGNAL(mapped(QWidget*)), ycQuiz, SLOT(loadFile(QWidget*)));
 	saveAct->setShortcut(tr("Ctrl+S", "Save"));
 	fileMenu->addAction(saveAct);
-	fileMenu->addSeparator();
-	QAction *exportAct = new QAction(tr("&Export to MP3"), this);
-	connect(exportAct, SIGNAL(triggered()), ycQuiz, SLOT(exportMP3()));
-	exportAct->setShortcut(tr("Ctrl+E", "Export"));
-	fileMenu->addAction(exportAct);
-	fileMenu->addSeparator();
-	QAction *closeAct = new QAction(QtIconLoader::icon("document-close"), tr("&Close"), this);
-	connect(closeAct, SIGNAL(triggered()), this, SLOT(closeFile()));
-	closeAct->setShortcut(tr("Ctrl+W", "Close"));
-	fileMenu->addAction(closeAct);
 	fileMenu->addSeparator();
 	QAction *exitAct = new QAction(QtIconLoader::icon("application-exit"), tr("&Quit"), this);
 	connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));

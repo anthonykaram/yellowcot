@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.0, released YYYY-MM-DD
+	Yellowcot 1.2.0, released 2011-12-26
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -24,6 +24,7 @@
 #define MINWIDTH 500
 #define MINHEIGHT 300
 #define IMAGEBORDER 12
+#define EDIT_TABLE_IMG_HEIGHT 50
 #define TMPDIR "/var/tmp/yellowcot_quiz"
 
 inline void sysprintf(const char *fmt, ...) {

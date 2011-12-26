@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.0, released YYYY-MM-DD
+	Yellowcot 1.2.0, released 2011-12-26
 
 	Copyleft 2011 Anthony Karam Karam
 
