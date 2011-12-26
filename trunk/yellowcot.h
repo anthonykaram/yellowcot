@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.0, released YYYY-MM-DD
+	Yellowcot 1.2.0, released 2011-12-26
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -32,9 +32,6 @@ class YCQuiz : public QWidget {
 		YCQuiz (QWidget *parent = 0);
 		QTabBar *tabBar;
 		QComboBox *questionsAndAnswersList;
-		QCheckBox *fileIsLoaded;
-
-		//quiz tab widgets
 		QPushButton *currQorA;
 		QLabel *rangeLbl;
 		QSpinBox *startBox;
@@ -42,21 +39,17 @@ class YCQuiz : public QWidget {
 		QSpinBox *endBox;
 		QLabel *reversedLbl;
 		QCheckBox *reversedCheckBox;
-
-		//media tab widgets
-		QTableWidget *mediaTable;
-		QPushButton *addMediaItem;
-		QPushButton *rmMediaItem;
-		QPushButton *mvMediaRowUp;
-		QPushButton *mvMediaRowDown;
-
-		//questions/answers tab widgets
 		QTableWidget *editTable;
 		QPushButton *insertRow;
 		QPushButton *removeRow;
 		QPushButton *moveRowUp;
 		QPushButton *moveRowDown;
 		QPushButton *insertImage;
+		QPushButton *insertText;
+		QCheckBox *fileIsLoaded;
+		QComboBox *questionMediaSources;
+		QComboBox *answerMediaSources;
+		QCheckBox *showLicencingData;
 
 	public slots:
 		void resizeEvent(QResizeEvent *event) {
@@ -90,38 +83,38 @@ class YCQuiz : public QWidget {
 			}
 		}
 		void insertARow() {
-			int i = editTable->currentRow();
+
+			//create variables
+			int i = editTable->currentRow(), j, numQAPairs = questionMediaSources->count();
+
+			//insert the row
 			editTable->insertRow(i);
 
-			//add question cells
-			editTable->setCellWidget(i, 0, new QComboBox);
-			qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->addItem(QString::fromUtf8("text"));
-			qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->addItem(QString::fromUtf8("image"));
-			QTableWidgetItem *cell1 = new QTableWidgetItem();
-			editTable->setItem(i, 1, cell1);
-			QTableWidgetItem *cell2 = new QTableWidgetItem();
-			editTable->setItem(i, 2, cell2);
-			QTableWidgetItem *cell3 = new QTableWidgetItem();
-			editTable->setItem(i, 3, cell3);
+			//add the cells
+			for (j = 0 ; j < 6 ; j++) {
+				QTableWidgetItem *cell = new QTableWidgetItem();
+				editTable->setItem(i, j, cell);
+			}
 
-			//add answer cells
-			editTable->setCellWidget(i, 4, new QComboBox);
-			qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->addItem(QString::fromUtf8("text"));
-			qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->addItem(QString::fromUtf8("image"));
-			QTableWidgetItem *cell5 = new QTableWidgetItem();
-			editTable->setItem(i, 5, cell5);
-			QTableWidgetItem *cell6 = new QTableWidgetItem();
-			editTable->setItem(i, 6, cell6);
-			QTableWidgetItem *cell7 = new QTableWidgetItem();
-			editTable->setItem(i, 7, cell7);
+			//update the media source lists
+			questionMediaSources->addItem("");
+			for (j = numQAPairs ; j > i ; j--)
+				questionMediaSources->setItemText(j, questionMediaSources->itemText(j-1));
+			questionMediaSources->setItemText(i, "");
+			answerMediaSources->addItem("");
+			for (j = numQAPairs ; j > i ; j--)
+				answerMediaSources->setItemText(j, answerMediaSources->itemText(j-1));
+			answerMediaSources->setItemText(i, "");
 
 			//set current cell
-			editTable->setCurrentCell(editTable->currentRow() - 1, editTable->currentColumn());
+			editTable->setCurrentCell(i, editTable->currentColumn());
 		}
 		void removeARow() {
 			int i=editTable->currentRow();
 			if (editTable->rowCount() > 1) {
 				editTable->removeRow(i);
+				questionMediaSources->removeItem(i);
+				answerMediaSources->removeItem(i);
 				if (editTable->rowCount() - 1 == editTable->currentRow() || !i)
 					editTable->setCurrentCell(editTable->currentRow(), editTable->currentColumn());
 				else
@@ -133,44 +126,106 @@ class YCQuiz : public QWidget {
 			if (i > 0) {
 
 				//make/prepare variables
-				int col1, col5;
-				char str2[STRLEN], str3[STRLEN], str4[STRLEN], str6[STRLEN], str7[STRLEN], str8[STRLEN];
+				int qtype = 0, atype = 0;
+				char str1[STRLEN], str2[STRLEN], str3[STRLEN], str4[STRLEN], str5[STRLEN], str6[STRLEN], str1_top[STRLEN], str4_top[STRLEN];
+				memset(str1, 0, STRLEN);
 				memset(str2, 0, STRLEN);
 				memset(str3, 0, STRLEN);
 				memset(str4, 0, STRLEN);
+				memset(str5, 0, STRLEN);
 				memset(str6, 0, STRLEN);
-				memset(str7, 0, STRLEN);
-				memset(str8, 0, STRLEN);
 
-				//record data in row
-				col1 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->currentIndex();
+				//record data in current row (including media source info)
+				sprintf(str1, editTable->item(i, 0)->text().toUtf8().data());
+				if (str1[0] == '\0') {
+					sprintf(str1, questionMediaSources->itemText(i).toUtf8().data());
+					if (str1[0] != '\0')
+						qtype = 1;
+				}
 				sprintf(str2, editTable->item(i, 1)->text().toUtf8().data());
 				sprintf(str3, editTable->item(i, 2)->text().toUtf8().data());
 				sprintf(str4, editTable->item(i, 3)->text().toUtf8().data());
-				col5 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->currentIndex();
+				if (str4[0] == '\0') {
+					sprintf(str4, answerMediaSources->itemText(i).toUtf8().data());
+					if (str4[0] != '\0')
+						atype = 1;
+				}
+				sprintf(str5, editTable->item(i, 4)->text().toUtf8().data());
 				sprintf(str6, editTable->item(i, 5)->text().toUtf8().data());
-				sprintf(str7, editTable->item(i, 6)->text().toUtf8().data());
-				sprintf(str8, editTable->item(i, 7)->text().toUtf8().data());
 
-				//overwrite row with data from row above
-				qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 0))->currentIndex());
+				//overwrite current row with data from row above
+				sprintf(str1_top, editTable->item(i-1, 0)->text().toUtf8().data());
+				if (str1_top[0] != '\0') {
+					QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(str1_top));
+					editTable->setItem(i, 0, cell);
+				}
+				else {
+					sprintf(str1_top, questionMediaSources->itemText(i-1).toUtf8().data());
+					if (str1_top[0] == '\0') {
+						QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(editTable->item(i-1, 0)->text().toUtf8().data()));
+						editTable->setItem(i, 0, cell);
+					}
+					else {
+						QTableWidgetItem *cell = new QTableWidgetItem();
+						cell->setData(Qt::DecorationRole, QPixmap(QString::fromUtf8(str1_top)).scaledToHeight(EDIT_TABLE_IMG_HEIGHT, Qt::SmoothTransformation));
+						cell->setFlags(cell->flags() & ~Qt::ItemIsEditable);
+						editTable->setItem(i, 0, cell);
+					}
+				}
+				questionMediaSources->setItemText(i, questionMediaSources->itemText(i-1));
 				editTable->item(i, 1)->setText(editTable->item(i-1, 1)->text());
 				editTable->item(i, 2)->setText(editTable->item(i-1, 2)->text());
-				editTable->item(i, 3)->setText(editTable->item(i-1, 3)->text());
-				qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 4))->currentIndex());
+				sprintf(str4_top, editTable->item(i-1, 3)->text().toUtf8().data());
+				if (str4_top[0] != '\0') {
+					QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(str4_top));
+					editTable->setItem(i, 3, cell);
+				}
+				else {
+					sprintf(str4_top, answerMediaSources->itemText(i-1).toUtf8().data());
+					if (str4_top[0] == '\0') {
+						QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(editTable->item(i-1, 3)->text().toUtf8().data()));
+						editTable->setItem(i, 3, cell);
+					}
+					else {
+						QTableWidgetItem *cell = new QTableWidgetItem();
+						cell->setData(Qt::DecorationRole, QPixmap(QString::fromUtf8(str4_top)).scaledToHeight(EDIT_TABLE_IMG_HEIGHT, Qt::SmoothTransformation));
+						cell->setFlags(cell->flags() & ~Qt::ItemIsEditable);
+						editTable->setItem(i, 3, cell);
+					}
+				}
+				answerMediaSources->setItemText(i, answerMediaSources->itemText(i-1));
+				editTable->item(i, 4)->setText(editTable->item(i-1, 4)->text());
 				editTable->item(i, 5)->setText(editTable->item(i-1, 5)->text());
-				editTable->item(i, 6)->setText(editTable->item(i-1, 6)->text());
-				editTable->item(i, 7)->setText(editTable->item(i-1, 7)->text());
 
 				//write data from variables into row above
-				qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 0))->setCurrentIndex(col1);
+				if (qtype) {
+					QTableWidgetItem *cell = new QTableWidgetItem();
+					cell->setData(Qt::DecorationRole, QPixmap(QString::fromUtf8(str1)).scaledToHeight(EDIT_TABLE_IMG_HEIGHT, Qt::SmoothTransformation));
+					cell->setFlags(cell->flags() & ~Qt::ItemIsEditable);
+					editTable->setItem(i-1, 0, cell);
+					questionMediaSources->setItemText(i-1, QString::fromUtf8(str1));
+				}
+				else {
+					QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(str1));
+					editTable->setItem(i-1, 0, cell);
+					questionMediaSources->setItemText(i-1, "");
+				}
 				editTable->item(i-1, 1)->setText(QString::fromUtf8(str2));
 				editTable->item(i-1, 2)->setText(QString::fromUtf8(str3));
-				editTable->item(i-1, 3)->setText(QString::fromUtf8(str4));
-				qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 4))->setCurrentIndex(col5);
+				if (atype) {
+					QTableWidgetItem *cell = new QTableWidgetItem();
+					cell->setData(Qt::DecorationRole, QPixmap(QString::fromUtf8(str4)).scaledToHeight(EDIT_TABLE_IMG_HEIGHT, Qt::SmoothTransformation));
+					cell->setFlags(cell->flags() & ~Qt::ItemIsEditable);
+					editTable->setItem(i-1, 3, cell);
+					answerMediaSources->setItemText(i-1, QString::fromUtf8(str4));
+				}
+				else {
+					QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(str4));
+					editTable->setItem(i-1, 3, cell);
+					answerMediaSources->setItemText(i-1, "");
+				}
+				editTable->item(i-1, 4)->setText(QString::fromUtf8(str5));
 				editTable->item(i-1, 5)->setText(QString::fromUtf8(str6));
-				editTable->item(i-1, 6)->setText(QString::fromUtf8(str7));
-				editTable->item(i-1, 7)->setText(QString::fromUtf8(str8));
 
 				//set current cell to row above
 				editTable->setCurrentCell(i-1, editTable->currentColumn());
@@ -181,166 +236,122 @@ class YCQuiz : public QWidget {
 			if (i != -1 && i != editTable->rowCount() - 1) {
 
 				//make/prepare variables
-				int col1, col5;
-				char str2[STRLEN], str3[STRLEN], str4[STRLEN], str6[STRLEN], str7[STRLEN], str8[STRLEN];
+				int qtype = 0, atype = 0;
+				char str1[STRLEN], str2[STRLEN], str3[STRLEN], str4[STRLEN], str5[STRLEN], str6[STRLEN], str1_top[STRLEN], str4_top[STRLEN];
+				memset(str1, 0, STRLEN);
 				memset(str2, 0, STRLEN);
 				memset(str3, 0, STRLEN);
 				memset(str4, 0, STRLEN);
+				memset(str5, 0, STRLEN);
 				memset(str6, 0, STRLEN);
-				memset(str7, 0, STRLEN);
-				memset(str8, 0, STRLEN);
 
-				//record data in row
-				col1 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->currentIndex();
+				//record data in current row (including media source info)
+				sprintf(str1, editTable->item(i, 0)->text().toUtf8().data());
+				if (str1[0] == '\0') {
+					sprintf(str1, questionMediaSources->itemText(i).toUtf8().data());
+					if (str1[0] != '\0')
+						qtype = 1;
+				}
 				sprintf(str2, editTable->item(i, 1)->text().toUtf8().data());
 				sprintf(str3, editTable->item(i, 2)->text().toUtf8().data());
 				sprintf(str4, editTable->item(i, 3)->text().toUtf8().data());
-				col5 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->currentIndex();
+				if (str4[0] == '\0') {
+					sprintf(str4, answerMediaSources->itemText(i).toUtf8().data());
+					if (str4[0] != '\0')
+						atype = 1;
+				}
+				sprintf(str5, editTable->item(i, 4)->text().toUtf8().data());
 				sprintf(str6, editTable->item(i, 5)->text().toUtf8().data());
-				sprintf(str7, editTable->item(i, 6)->text().toUtf8().data());
-				sprintf(str8, editTable->item(i, 7)->text().toUtf8().data());
 
-				//overwrite row with data from row below
-				qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i+1, 0))->currentIndex());
+				//overwrite current row with data from row below
+				sprintf(str1_top, editTable->item(i+1, 0)->text().toUtf8().data());
+				if (str1_top[0] != '\0') {
+					QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(str1_top));
+					editTable->setItem(i, 0, cell);
+				}
+				else {
+					sprintf(str1_top, questionMediaSources->itemText(i+1).toUtf8().data());
+					if (str1_top[0] == '\0') {
+						QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(editTable->item(i+1, 0)->text().toUtf8().data()));
+						editTable->setItem(i, 0, cell);
+					}
+					else {
+						QTableWidgetItem *cell = new QTableWidgetItem();
+						cell->setData(Qt::DecorationRole, QPixmap(QString::fromUtf8(str1_top)).scaledToHeight(EDIT_TABLE_IMG_HEIGHT, Qt::SmoothTransformation));
+						cell->setFlags(cell->flags() & ~Qt::ItemIsEditable);
+						editTable->setItem(i, 0, cell);
+					}
+				}
+				questionMediaSources->setItemText(i, questionMediaSources->itemText(i+1));
 				editTable->item(i, 1)->setText(editTable->item(i+1, 1)->text());
 				editTable->item(i, 2)->setText(editTable->item(i+1, 2)->text());
-				editTable->item(i, 3)->setText(editTable->item(i+1, 3)->text());
-				qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i+1, 4))->currentIndex());
+				sprintf(str4_top, editTable->item(i+1, 3)->text().toUtf8().data());
+				if (str4_top[0] != '\0') {
+					QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(str4_top));
+					editTable->setItem(i, 3, cell);
+				}
+				else {
+					sprintf(str4_top, answerMediaSources->itemText(i+1).toUtf8().data());
+					if (str4_top[0] == '\0') {
+						QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(editTable->item(i+1, 3)->text().toUtf8().data()));
+						editTable->setItem(i, 3, cell);
+					}
+					else {
+						QTableWidgetItem *cell = new QTableWidgetItem();
+						cell->setData(Qt::DecorationRole, QPixmap(QString::fromUtf8(str4_top)).scaledToHeight(EDIT_TABLE_IMG_HEIGHT, Qt::SmoothTransformation));
+						cell->setFlags(cell->flags() & ~Qt::ItemIsEditable);
+						editTable->setItem(i, 3, cell);
+					}
+				}
+				answerMediaSources->setItemText(i, answerMediaSources->itemText(i+1));
+				editTable->item(i, 4)->setText(editTable->item(i+1, 4)->text());
 				editTable->item(i, 5)->setText(editTable->item(i+1, 5)->text());
-				editTable->item(i, 6)->setText(editTable->item(i+1, 6)->text());
-				editTable->item(i, 7)->setText(editTable->item(i+1, 7)->text());
 
 				//write data from variables into row below
-				qobject_cast<QComboBox*>(editTable->cellWidget(i+1, 0))->setCurrentIndex(col1);
+				if (qtype) {
+					QTableWidgetItem *cell = new QTableWidgetItem();
+					cell->setData(Qt::DecorationRole, QPixmap(QString::fromUtf8(str1)).scaledToHeight(EDIT_TABLE_IMG_HEIGHT, Qt::SmoothTransformation));
+					cell->setFlags(cell->flags() & ~Qt::ItemIsEditable);
+					editTable->setItem(i+1, 0, cell);
+					questionMediaSources->setItemText(i+1, QString::fromUtf8(str1));
+				}
+				else {
+					QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(str1));
+					editTable->setItem(i+1, 0, cell);
+					questionMediaSources->setItemText(i+1, "");
+				}
 				editTable->item(i+1, 1)->setText(QString::fromUtf8(str2));
 				editTable->item(i+1, 2)->setText(QString::fromUtf8(str3));
-				editTable->item(i+1, 3)->setText(QString::fromUtf8(str4));
-				qobject_cast<QComboBox*>(editTable->cellWidget(i+1, 4))->setCurrentIndex(col5);
+				if (atype) {
+					QTableWidgetItem *cell = new QTableWidgetItem();
+					cell->setData(Qt::DecorationRole, QPixmap(QString::fromUtf8(str4)).scaledToHeight(EDIT_TABLE_IMG_HEIGHT, Qt::SmoothTransformation));
+					cell->setFlags(cell->flags() & ~Qt::ItemIsEditable);
+					editTable->setItem(i+1, 3, cell);
+					answerMediaSources->setItemText(i+1, QString::fromUtf8(str4));
+				}
+				else {
+					QTableWidgetItem *cell = new QTableWidgetItem(QString::fromUtf8(str4));
+					editTable->setItem(i+1, 3, cell);
+					answerMediaSources->setItemText(i+1, "");
+				}
+				editTable->item(i+1, 4)->setText(QString::fromUtf8(str5));
 				editTable->item(i+1, 5)->setText(QString::fromUtf8(str6));
-				editTable->item(i+1, 6)->setText(QString::fromUtf8(str7));
-				editTable->item(i+1, 7)->setText(QString::fromUtf8(str8));
 
 				//set current cell to row below
 				editTable->setCurrentCell(i+1, editTable->currentColumn());
 			}
 		}
-		void swapTwoMediaFiles(int first , int second) {
-
-			//mv second to tmp
-			sysprintf("for f in %s/media/%i.* ; do ext=${f##*.} ; mv $f %s/media/tmp.$ext ; done", TMPDIR, second, TMPDIR);
-
-			//mv first to second
-			sysprintf("for f in %s/media/%i.* ; do ext=${f##*.} ; mv $f %s/media/%i.$ext ; done", TMPDIR, first, TMPDIR, second);
-
-			//mv tmp to first
-			sysprintf("for f in %s/media/tmp.* ; do ext=${f##*.} ; mv $f %s/media/%i.$ext ; done", TMPDIR, TMPDIR, first);
-		}
-		void moveTheMediaRowUp() {
-			int i = mediaTable->currentRow();
-			if (i > 0) {
-
-				//swap actual media files in temp directory
-				swapTwoMediaFiles(i, i+1);
-
-/*
-				//make/prepare variables
-				int col1, col5;
-				char str2[STRLEN], str3[STRLEN], str4[STRLEN], str6[STRLEN], str7[STRLEN], str8[STRLEN];
-				memset(str2, 0, STRLEN);
-				memset(str3, 0, STRLEN);
-				memset(str4, 0, STRLEN);
-				memset(str6, 0, STRLEN);
-				memset(str7, 0, STRLEN);
-				memset(str8, 0, STRLEN);
-
-				//record data in row
-				col1 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->currentIndex();
-				sprintf(str2, editTable->item(i, 1)->text().toUtf8().data());
-				sprintf(str3, editTable->item(i, 2)->text().toUtf8().data());
-				sprintf(str4, editTable->item(i, 3)->text().toUtf8().data());
-				col5 = qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->currentIndex();
-				sprintf(str6, editTable->item(i, 5)->text().toUtf8().data());
-				sprintf(str7, editTable->item(i, 6)->text().toUtf8().data());
-				sprintf(str8, editTable->item(i, 7)->text().toUtf8().data());
-
-				//overwrite row with data from row above
-				qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 0))->currentIndex());
-				editTable->item(i, 1)->setText(editTable->item(i-1, 1)->text());
-				editTable->item(i, 2)->setText(editTable->item(i-1, 2)->text());
-				editTable->item(i, 3)->setText(editTable->item(i-1, 3)->text());
-				qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->setCurrentIndex(qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 4))->currentIndex());
-				editTable->item(i, 5)->setText(editTable->item(i-1, 5)->text());
-				editTable->item(i, 6)->setText(editTable->item(i-1, 6)->text());
-				editTable->item(i, 7)->setText(editTable->item(i-1, 7)->text());
-
-				//write data from variables into row above
-				qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 0))->setCurrentIndex(col1);
-				editTable->item(i-1, 1)->setText(QString::fromUtf8(str2));
-				editTable->item(i-1, 2)->setText(QString::fromUtf8(str3));
-				editTable->item(i-1, 3)->setText(QString::fromUtf8(str4));
-				qobject_cast<QComboBox*>(editTable->cellWidget(i-1, 4))->setCurrentIndex(col5);
-				editTable->item(i-1, 5)->setText(QString::fromUtf8(str6));
-				editTable->item(i-1, 6)->setText(QString::fromUtf8(str7));
-				editTable->item(i-1, 7)->setText(QString::fromUtf8(str8));
-
-				//set current cell to row above
-				editTable->setCurrentCell(i-1, editTable->currentColumn());
-
-*/
-				//update quiz image to reflect change
-			}
-		}
-		void moveTheMediaRowDown() {
-			int i = mediaTable->currentRow();
-			if (i != -1 && i != mediaTable->rowCount() - 1) {
-
-				//swap actual media files in temp directory
-				swapTwoMediaFiles(i+1, i+2);
-
-				//update quiz image to reflect change
-			}
-		}
-		void exportMP3() {
-
-			//declare variables
-			timeval tv;
-			int x;
-			int numqs = questionsAndAnswersList->count() / 8;
-			int numinstances = 3;
-
-			//generate new random seed based on microseconds since UNIX epoch
-			gettimeofday(&tv, NULL);
-			srand((int)tv.tv_usec);
-
-			//create the mp3
-			sysprintf("sox -r 16k -n %s/silence.wav trim 0 5", TMPDIR);
-			sysprintf("cp %s/silence.wav %s/out.wav", TMPDIR, TMPDIR);
-			for (int i = 0 ; i < numqs * numinstances ; i++) {
-				x = (int)((double)rand() * numqs / RAND_MAX + 1);
-				sysprintf("echo \"%s\" | text2wave -o %s/question.wav", questionsAndAnswersList->itemText(x * 8 - 7).toUtf8().data(), TMPDIR);
-				sysprintf("sox %s/out.wav %s/question.wav %s/silence.wav %s/out2.wav", TMPDIR, TMPDIR, TMPDIR, TMPDIR);
-				sysprintf("mv %s/out2.wav %s/out.wav", TMPDIR, TMPDIR);
-				sysprintf("echo \"%s\" | text2wave -o %s/answer.wav", questionsAndAnswersList->itemText(x * 8 - 3).toUtf8().data(), TMPDIR);
-				sysprintf("sox %s/out.wav %s/answer.wav %s/silence.wav %s/out2.wav", TMPDIR, TMPDIR, TMPDIR, TMPDIR);
-				sysprintf("mv %s/out2.wav %s/out.wav", TMPDIR, TMPDIR);
-			}
-			sysprintf("lame %s/out.wav ~/ycquiz.mp3 ; rm %s/*.wav", TMPDIR, TMPDIR);
-
-			//tell the user of the success
-			QMessageBox::information(this, tr("Export to MP3"), tr("Yellowcot quiz successfully exported to: ~/ycquiz.mp3"));
-		}
 		void saveFile(QWidget *qLbl) {
 			QLabel *theFilePath = qobject_cast<QLabel*>(qLbl);
 			if (!(theFilePath->text().isNull())) {
-				int i;
+				int i, mediaCtr = 1;
 				char str[STRLEN];
 				FILE *file;
 				FILE *file2;
-				sysprintf("mv %s/i %s/i_backup", TMPDIR, TMPDIR);
-				sysprintf("mkdir %s/i", TMPDIR);
-				sysprintf("echo \"<?xml version=\\\"1.0\\\"?>\" > %s/index.xml", TMPDIR);
+				sysprintf("mkdir %s/new ; mkdir %s/new/media", TMPDIR, TMPDIR);
+				sysprintf("echo \"<?xml version=\\\"1.0\\\"?>\" > %s/new/index.xml", TMPDIR);
 				memset(str, 0, STRLEN);
-				sprintf(str, "%s/index.xml", TMPDIR);
+				sprintf(str, "%s/new/index.xml", TMPDIR);
 				file = fopen(str, "a+");
 				fprintf(file, "<quiz>\n");
 				for (i = 0; i < editTable->rowCount(); i++) {
@@ -349,99 +360,91 @@ class YCQuiz : public QWidget {
 					fprintf(file, "	<qa>\n");
 
 					//store question type and question content
-					if (qobject_cast<QComboBox*>(editTable->cellWidget(i, 0))->currentIndex()) {
+					memset(str, 0, STRLEN);
+					sprintf(str, questionMediaSources->itemText(i).toUtf8().data());
+					if (str[0] == '\0')
+						fprintf(file, "		<q type=\"text\">%s</q>\n", (editTable->item(i, 0))->text().toUtf8().data());
+					else {
+						sysprintf("ext=$(echo \"%s\" | awk -F . '{print tolower($NF)}') ; cp \"%s\" %s/new/media/%d.$ext ; cd %s/new/media ; echo -n %s/media/ > %s/media.txt ; echo %d.* >> %s/media.txt", str, str, TMPDIR, mediaCtr, TMPDIR, TMPDIR, TMPDIR, mediaCtr, TMPDIR);
+						fprintf(file, "		<q type=\"media\">%d</q>\n", mediaCtr++);
 						memset(str, 0, STRLEN);
-						sprintf(str, "%s/i_backup/%s", TMPDIR, (editTable->item(i, 1))->text().toUtf8().data());
-						if ((file2 = fopen(str, "r"))) {
-							fclose(file2);
-							sysprintf("cp \"%s/i_backup/%s\" %s/i/.", TMPDIR, (editTable->item(i, 1))->text().toUtf8().data(), TMPDIR);
-							fprintf(file, "		<q type=\"image\">%s</q>\n", (editTable->item(i, 1))->text().toUtf8().data());
-						}
-						else if ((file2 = fopen((editTable->item(i, 1))->text().toUtf8().data(), "r"))) {
-							fclose(file2);
-							sysprintf("cp \"%s\" %s/i/.", (editTable->item(i, 1))->text().toUtf8().data(), TMPDIR);
-							extractFileName((editTable->item(i, 1))->text().toUtf8().data(), str);
-							fprintf(file, "		<q type=\"image\">%s</q>\n", str);
-						}
-						else {
-							memset(str, 0, STRLEN);
-							sprintf(str, "Image not saved because it could not be found: %s", (editTable->item(i, 1))->text().toUtf8().data());
-							QMessageBox::warning(this, tr("Missing image"), str);
-							fprintf(file, "		<q type=\"text\">(missing image)</q>\n");
-						}
+						sprintf(str, "%s/media.txt", TMPDIR);
+						file2 = fopen(str, "r");
+						memset(str, 0, STRLEN);
+						fgets(str, STRLEN, file2);
+						str[strlen(str) - 1] = '\0';
+						fclose(file2);
+						sysprintf("rm %s/media.txt", TMPDIR);
+						questionMediaSources->setItemText(i, str);
 					}
-					else
-						fprintf(file, "		<q type=\"text\">%s</q>\n", (editTable->item(i, 1))->text().toUtf8().data());
 
 					//store question source
-					fprintf(file, "		<qsrc>%s</qsrc>\n", (editTable->item(i, 2))->text().toUtf8().data());
+					fprintf(file, "		<qsrc>%s</qsrc>\n", (editTable->item(i, 1))->text().toUtf8().data());
 
 					//store question licence
-					fprintf(file, "		<qlic>%s</qlic>\n", (editTable->item(i, 3))->text().toUtf8().data());
+					fprintf(file, "		<qlic>%s</qlic>\n", (editTable->item(i, 2))->text().toUtf8().data());
 
 					//store answer type and answer content
-					if (qobject_cast<QComboBox*>(editTable->cellWidget(i, 4))->currentIndex()) {
+					memset(str, 0, STRLEN);
+					sprintf(str, answerMediaSources->itemText(i).toUtf8().data());
+					if (str[0] == '\0')
+						fprintf(file, "		<a type=\"text\">%s</a>\n", (editTable->item(i, 3))->text().toUtf8().data());
+					else {
+						sysprintf("ext=$(echo \"%s\" | awk -F . '{print tolower($NF)}') ; cp \"%s\" %s/new/media/%d.$ext ; cd %s/new/media ; echo -n %s/media/ > %s/media.txt ; echo %d.* >> %s/media.txt", str, str, TMPDIR, mediaCtr, TMPDIR, TMPDIR, TMPDIR, mediaCtr, TMPDIR);
+						fprintf(file, "		<a type=\"media\">%d</a>\n", mediaCtr++);
 						memset(str, 0, STRLEN);
-						sprintf(str, "%s/i_backup/%s", TMPDIR, (editTable->item(i, 5))->text().toUtf8().data());
-						if ((file2 = fopen(str, "r"))) {
-							fclose(file2);
-							sysprintf("cp \"%s/i_backup/%s\" %s/i/.", TMPDIR, (editTable->item(i, 5))->text().toUtf8().data(), TMPDIR);
-							fprintf(file, "		<a type=\"image\">%s</a>\n", (editTable->item(i, 5))->text().toUtf8().data());
-						}
-						else if ((file2 = fopen((editTable->item(i, 5))->text().toUtf8().data(), "r"))) {
-							fclose(file2);
-							sysprintf("cp \"%s\" %s/i/.", (editTable->item(i, 5))->text().toUtf8().data(), TMPDIR);
-							extractFileName((editTable->item(i, 5))->text().toUtf8().data(), str);
-							fprintf(file, "		<a type=\"image\">%s</a>\n", str);
-						}
-						else {
-							memset(str, 0, STRLEN);
-							sprintf(str, "Image not saved because it could not be found: %s", (editTable->item(i, 5))->text().toUtf8().data());
-							QMessageBox::warning(this, tr("Missing image"), str);
-							fprintf(file, "		<a type=\"text\">(missing image)</a>\n");
-						}
+						sprintf(str, "%s/media.txt", TMPDIR);
+						file2 = fopen(str, "r");
+						memset(str, 0, STRLEN);
+						fgets(str, STRLEN, file2);
+						str[strlen(str) - 1] = '\0';
+						fclose(file2);
+						sysprintf("rm %s/media.txt", TMPDIR);
+						answerMediaSources->setItemText(i, str);
 					}
-					else
-						fprintf(file, "		<a type=\"text\">%s</a>\n", (editTable->item(i, 5))->text().toUtf8().data());
 
 					//store answer source
-					fprintf(file, "		<asrc>%s</asrc>\n", (editTable->item(i, 6))->text().toUtf8().data());
+					fprintf(file, "		<asrc>%s</asrc>\n", (editTable->item(i, 4))->text().toUtf8().data());
 
 					//store answer licence
-					fprintf(file, "		<alic>%s</alic>\n", (editTable->item(i, 7))->text().toUtf8().data());
+					fprintf(file, "		<alic>%s</alic>\n", (editTable->item(i, 5))->text().toUtf8().data());
 
 					//end qa section
 					fprintf(file, "	</qa>\n");
 				}
-				sysprintf("rm -r %s/i_backup", TMPDIR);
 				fprintf(file, "</quiz>");
 				fclose(file);
-				sysprintf("rm \"%s\" ; cd %s ; tar cf \"%s\" --exclude=text.png *", theFilePath->text().toUtf8().data(), TMPDIR, theFilePath->text().toUtf8().data());
+				sysprintf("rm \"%s\" ; cd %s/new ; tar cf \"%s\" * ; cd .. ; rm -r media ; mv new/* . ; rm -r new", theFilePath->text().toUtf8().data(), TMPDIR, theFilePath->text().toUtf8().data());
 				memset(str, 0, STRLEN);
 				sprintf(str, "File saved to %s.", theFilePath->text().toUtf8().data());
 				QMessageBox::information(this, tr("Save"), str);
 			}
 		}
+		void toggleLicencing() {
+			if (showLicencingData->isChecked()) {
+				editTable->setColumnHidden(1, false);
+				editTable->setColumnHidden(2, false);
+				editTable->setColumnHidden(4, false);
+				editTable->setColumnHidden(5, false);
+			}
+			else {
+				editTable->setColumnHidden(1, true);
+				editTable->setColumnHidden(2, true);
+				editTable->setColumnHidden(4, true);
+				editTable->setColumnHidden(5, true);
+			}
+		}
 		void updateVisibleWidgets() {
 			int currentTab = tabBar->currentIndex();
 			if (currentTab == 0) {
-
-				//hide media tab widgets
-				mediaTable->hide();
-				addMediaItem->hide();
-				rmMediaItem->hide();
-				mvMediaRowUp->hide();
-				mvMediaRowDown->hide();
-
-				//hide questions/answers tab widgets
+				showLicencingData->hide();
 				editTable->hide();
 				insertRow->hide();
 				removeRow->hide();
 				moveRowUp->hide();
 				moveRowDown->hide();
 				insertImage->hide();
-
-				//show quiz tab widgets
+				insertText->hide();
 				currQorA->show();
 				rangeLbl->show();
 				startBox->show();
@@ -450,35 +453,7 @@ class YCQuiz : public QWidget {
 				reversedLbl->show();
 				reversedCheckBox->show();
 			}
-			else if (currentTab == 1) {
-
-				//hide quiz tab widgets
-				currQorA->hide();
-				rangeLbl->hide();
-				startBox->hide();
-				toLbl->hide();
-				endBox->hide();
-				reversedLbl->hide();
-				reversedCheckBox->hide();
-
-				//hide questions/answers tab widgets
-				editTable->hide();
-				insertRow->hide();
-				removeRow->hide();
-				moveRowUp->hide();
-				moveRowDown->hide();
-				insertImage->hide();
-
-				//show media tab widgets
-				mediaTable->show();
-				addMediaItem->show();
-				rmMediaItem->show();
-				mvMediaRowUp->show();
-				mvMediaRowDown->show();
-			}
 			else {
-
-				//hide quiz tab widgets
 				currQorA->hide();
 				rangeLbl->hide();
 				startBox->hide();
@@ -486,88 +461,16 @@ class YCQuiz : public QWidget {
 				endBox->hide();
 				reversedLbl->hide();
 				reversedCheckBox->hide();
-
-				//hide media tab widgets
-				mediaTable->hide();
-				addMediaItem->hide();
-				rmMediaItem->hide();
-				mvMediaRowUp->hide();
-				mvMediaRowDown->hide();
-
-				//show questions/answers tab widgets
+				showLicencingData->show();
 				editTable->show();
 				insertRow->show();
 				removeRow->show();
 				moveRowUp->show();
 				moveRowDown->show();
 				insertImage->show();
+				insertText->show();
 			}
 			updateButtonContents();
-		}
-		int extractXMLContent(char * in, const char * tag, char * out) {
-
-			//prepare variables
-			int i=0, j=0, k=0, startTagLength=0, endTagLength=0, tagFound=0;
-			char startTag[STRLEN], endTag[STRLEN];
-			memset(out, 0, STRLEN);
-			memset(startTag, 0, STRLEN);
-			memset(endTag, 0, STRLEN);
-
-			//create start tag and store its length
-			startTag[0] = '<';
-			while (tag[i] != '\0') {
-				startTag[i+1] = tag[i];
-				i++;
-			}
-			startTag[i+1] = '>';
-			startTagLength = i + 2;
-
-			//create end tag and store its length
-			i = 0;
-			endTag[0] = '<';
-			endTag[1] = '/';
-			while (tag[i] != '\0') {
-				endTag[i+2] = tag[i];
-				i++;
-			}
-			endTag[i+2] = '>';
-			endTagLength = i + 3;
-
-			//read through completion of start tag
-			i = 0;
-			while (!tagFound && in[j] != '\0') {
-				if (in[j] == startTag[i]) {
-					i++;
-					if (i == startTagLength)
-						tagFound = 1;
-				}
-				else
-					i = 0;
-				j++;
-			}
-			if (!tagFound)
-				return 0;
-
-			//read through completion of end tag
-			tagFound = 0;
-			i = 0;
-			while (!tagFound && in[j] != '\0') {
-				out[k++] = in[j];
-				if (in[j] == endTag[i]) {
-					i++;
-					if (i == endTagLength)
-						tagFound = 1;
-				}
-				else
-					i = 0;
-				j++;
-			}
-			if (!tagFound)
-				return 0;
-
-			//remove the end tag from the end of the data
-			out[k-i] = '\0';
-			return 1;
 		}
 		int extractQOrA(char * in, char * out) {
 			int i=0, j=0, endCarrotFound=0, startCarrotFound=0;
@@ -642,17 +545,9 @@ class YCQuiz : public QWidget {
 			fileIsLoaded->setChecked(false);
 			if (!(theFilePath->text().isNull())) {
 				FILE *file;
-				char str[STRLEN], indexXMLChunk[STRLEN], qOrA[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN], content[STRLEN], imageloc[STRLEN];
-				int ctr=0, currCol=0, mediaRows=0;
+				char str[STRLEN], qOrA[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN];
+				int ctr=0;
 				questionsAndAnswersList->clear();
-
-				//enable media tab widgets
-				mediaTable->setEnabled(true);
-				addMediaItem->setEnabled(true);
-				rmMediaItem->setEnabled(true);
-				mvMediaRowUp->setEnabled(true);
-				mvMediaRowDown->setEnabled(true);
-
 				currQorA->setEnabled(true);
 				rangeLbl->setEnabled(true);
 				startBox->setEnabled(true);
@@ -660,15 +555,15 @@ class YCQuiz : public QWidget {
 				endBox->setEnabled(true);
 				reversedLbl->setEnabled(true);
 				reversedCheckBox->setEnabled(true);
+				showLicencingData->setEnabled(true);
 				editTable->setEnabled(true);
 				insertRow->setEnabled(true);
 				removeRow->setEnabled(true);
 				moveRowUp->setEnabled(true);
 				moveRowDown->setEnabled(true);
 				insertImage->setEnabled(true);
+				insertText->setEnabled(true);
 				sysprintf("rm -r %s/* > /dev/null 2>&1 ; tar xf \"%s\" -C %s ; ", TMPDIR, theFilePath->text().toUtf8().data(), TMPDIR);
-
-				//read in data (old code)
 				memset(str, 0, STRLEN);
 				sprintf(str, "%s/index.xml", TMPDIR);
 				file = fopen(str, "r");
@@ -700,140 +595,154 @@ class YCQuiz : public QWidget {
 					}
 					fclose(file);
 				}
-				startBox->setMinimum(1);
-				startBox->setMaximum(ctr/2);
-				startBox->setValue(1);
-				endBox->setMinimum(1);
-				endBox->setMaximum(ctr/2);
-				endBox->setValue(ctr/2);
-				questionsAndAnswersList->setCurrentIndex(3 - 2 * reversedCheckBox->isChecked());
-				advanceQorA();
+
+				//clear media source lists and fill them with blank spaces
+				questionMediaSources->clear();
+				answerMediaSources->clear();
+				while (ctr > 0) {
+					questionMediaSources->addItem("");
+					answerMediaSources->addItem("");
+					ctr-=2;
+				}
+
+				//populate the edit table and media source lists
+				ctr = questionsAndAnswersList->count() /4;
 				editTable->clear();
 				editTable->setRowCount(ctr / 2);
-				editTable->setColumnCount(8);
-				editTable->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Question Type")));
-				editTable->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Question")));
-				editTable->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Question Source")));
-				editTable->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Question Licence")));
-				editTable->setHorizontalHeaderItem(4, new QTableWidgetItem(tr("Answer Type")));
-				editTable->setHorizontalHeaderItem(5, new QTableWidgetItem(tr("Answer")));
-				editTable->setHorizontalHeaderItem(6, new QTableWidgetItem(tr("Answer Source")));
-				editTable->setHorizontalHeaderItem(7, new QTableWidgetItem(tr("Answer Licence")));
+				editTable->setColumnCount(6);
+				editTable->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Question")));
+				editTable->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Question Source")));
+				editTable->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Question Licence")));
+				editTable->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Answer")));
+				editTable->setHorizontalHeaderItem(4, new QTableWidgetItem(tr("Answer Source")));
+				editTable->setHorizontalHeaderItem(5, new QTableWidgetItem(tr("Answer Licence")));
 				while (ctr > 0) {
 					ctr -= 2;
 
-					//populate cell 0 (question type)
-					editTable->setCellWidget(ctr/2, 0, new QComboBox);
-					qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 0))->addItem(QString::fromUtf8("text"));
-					qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 0))->addItem(QString::fromUtf8("image"));
-					if (!QString::compare(questionsAndAnswersList->itemText(ctr*4), QString("image")))
-						qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 0))->setCurrentIndex(1);
+					//populate cell 0 (question)
+					if (!QString::compare(questionsAndAnswersList->itemText(ctr*4), QString("media"))) {
+						sysprintf("echo %s/media/%s.* > %s/media.txt", TMPDIR, questionsAndAnswersList->itemText(ctr*4+1).toUtf8().data(), TMPDIR);
+						memset(str, 0, STRLEN);
+						sprintf(str, "%s/media.txt", TMPDIR);
+						file = fopen(str, "r");
+						memset(str, 0, STRLEN);
+						fgets(str, STRLEN, file);
+						str[strlen(str) - 1] = '\0';
+						fclose(file);
+						sysprintf("rm %s/media.txt", TMPDIR);
+						QTableWidgetItem *cell0a = new QTableWidgetItem();
+						cell0a->setData(Qt::DecorationRole, QPixmap(str).scaledToHeight(EDIT_TABLE_IMG_HEIGHT, Qt::SmoothTransformation));
+						cell0a->setFlags(cell0a->flags() & ~Qt::ItemIsEditable);
+						editTable->setItem(ctr/2, 0, cell0a);
+						questionMediaSources->setItemText(ctr/2, str);
+					}
+					else {
+						QTableWidgetItem *cell0b = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+1).toUtf8().data()));
+						editTable->setItem(ctr/2, 0, cell0b);
+					}
 
-					//populate cell 1 (question)
-					QTableWidgetItem *cell1 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+1).toUtf8().data()));
+					//populate cell 1 (question source)
+					QTableWidgetItem *cell1 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+2).toUtf8().data()));
 					editTable->setItem(ctr/2, 1, cell1);
 
-					//populate cell 2 (question source)
-					QTableWidgetItem *cell2 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+2).toUtf8().data()));
+					//populate cell 2 (question licence)
+					QTableWidgetItem *cell2 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+3).toUtf8().data()));
 					editTable->setItem(ctr/2, 2, cell2);
 
-					//populate cell 3 (question licence)
-					QTableWidgetItem *cell3 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+3).toUtf8().data()));
-					editTable->setItem(ctr/2, 3, cell3);
+					//populate cell 3 (answer)
+					if (!QString::compare(questionsAndAnswersList->itemText(ctr*4+4), QString("media"))) {
+						sysprintf("echo %s/media/%s.* > %s/media.txt", TMPDIR, questionsAndAnswersList->itemText(ctr*4+5).toUtf8().data(), TMPDIR);
+						memset(str, 0, STRLEN);
+						sprintf(str, "%s/media.txt", TMPDIR);
+						file = fopen(str, "r");
+						memset(str, 0, STRLEN);
+						fgets(str, STRLEN, file);
+						str[strlen(str) - 1] = '\0';
+						fclose(file);
+						sysprintf("rm %s/media.txt", TMPDIR);
+						QTableWidgetItem *cell3a = new QTableWidgetItem();
+						cell3a->setData(Qt::DecorationRole, QPixmap(str).scaledToHeight(EDIT_TABLE_IMG_HEIGHT, Qt::SmoothTransformation));
+						cell3a->setFlags(cell3a->flags() & ~Qt::ItemIsEditable);
+						editTable->setItem(ctr/2, 3, cell3a);
+						answerMediaSources->setItemText(ctr/2, str);
+					}
+					else {
+						QTableWidgetItem *cell3b = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+5).toUtf8().data()));
+						editTable->setItem(ctr/2, 3, cell3b);
+					}
 
-					//populate cell 4 (answer type)
-					editTable->setCellWidget(ctr/2, 4, new QComboBox);
-					qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 4))->addItem(QString::fromUtf8("text"));
-					qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 4))->addItem(QString::fromUtf8("image"));
-					if (!QString::compare(questionsAndAnswersList->itemText(ctr*4+4), QString("image")))
-						qobject_cast<QComboBox*>(editTable->cellWidget(ctr/2, 4))->setCurrentIndex(1);
+					//populate cell 4 (answer source)
+					QTableWidgetItem *cell4 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+6).toUtf8().data()));
+					editTable->setItem(ctr/2, 4, cell4);
 
-					//populate cell 5 (answer)
-					QTableWidgetItem *cell5 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+5).toUtf8().data()));
+					//populate cell 5 (answer licence)
+					QTableWidgetItem *cell5 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+7).toUtf8().data()));
 					editTable->setItem(ctr/2, 5, cell5);
-
-					//populate cell 6 (answer source)
-					QTableWidgetItem *cell6 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+6).toUtf8().data()));
-					editTable->setItem(ctr/2, 6, cell6);
-
-					//populate cell 7 (answer licence)
-					QTableWidgetItem *cell7 = new QTableWidgetItem(QString::fromUtf8(questionsAndAnswersList->itemText(ctr*4+7).toUtf8().data()));
-					editTable->setItem(ctr/2, 7, cell7);
 				}
 				editTable->resizeColumnsToContents();
 				editTable->resizeRowsToContents();
 
-				//populate media table based on index.xml
-				memset(str, 0, STRLEN);
-				sprintf(str, "%s/index.xml", TMPDIR);
-				file = fopen(str, "r");
-				mediaTable->clear();
-				mediaTable->setColumnCount(5);
-				mediaTable->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Preview")));
-				mediaTable->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Extension")));
-				mediaTable->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Source")));
-				mediaTable->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Licence")));
-				mediaTable->setHorizontalHeaderItem(4, new QTableWidgetItem(tr("Used?")));
-				if (file != NULL) {
-					memset(indexXMLChunk, 0, STRLEN);
-					while (fgets(indexXMLChunk, STRLEN, file)) {
-						if (strchr(indexXMLChunk, '\n') != NULL)
-							if (extractXMLContent(indexXMLChunk, "id", content))
-								mediaRows++;
-						memset(indexXMLChunk, 0, STRLEN);
-					}
-					fclose(file);
-				}
-				mediaTable->setRowCount(mediaRows);
-				ctr = 0;
-				memset(str, 0, STRLEN);
-				sprintf(str, "%s/index.xml", TMPDIR);
-				file = fopen(str, "r");
-				if (file != NULL) {
-					memset(indexXMLChunk, 0, STRLEN);
-					while (ctr < mediaRows && fgets(indexXMLChunk, STRLEN, file)) {
-						if (strchr(indexXMLChunk, '\n') != NULL) {
-							if (!currCol && extractXMLContent(indexXMLChunk, "extension", content)) {
-								memset(imageloc, 0, STRLEN);
-								sprintf(imageloc, "%s/media/%i.%s", TMPDIR, ctr + 1, content);
-								QTableWidgetItem *mediaCell = new QTableWidgetItem();
-								mediaCell->setData(Qt::DecorationRole, QPixmap(imageloc).scaledToHeight(50, Qt::SmoothTransformation));
-								mediaCell->setFlags(mediaCell->flags() & ~Qt::ItemIsEditable);
-								mediaTable->setItem(ctr, currCol++, mediaCell);
-								QTableWidgetItem *mediaCell2 = new QTableWidgetItem(QString::fromUtf8(content));
-								mediaCell2->setFlags(mediaCell2->flags() & ~Qt::ItemIsEditable);
-								mediaTable->setItem(ctr, currCol++, mediaCell2);
-							}
-							else if (currCol == 2 && extractXMLContent(indexXMLChunk, "src", content)) {
-								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
-								mediaTable->setItem(ctr, currCol++, mediaCell);
-							}
-							else if (currCol == 3 && extractXMLContent(indexXMLChunk, "licence", content)) {
-								QTableWidgetItem *mediaCell = new QTableWidgetItem(QString::fromUtf8(content));
-								mediaTable->setItem(ctr, currCol++, mediaCell);
-								QTableWidgetItem *mediaCell2 = new QTableWidgetItem(QString::fromUtf8("N"));
-								mediaCell2->setFlags(mediaCell2->flags() & ~Qt::ItemIsEditable);
-								mediaTable->setItem(ctr++, currCol, mediaCell2);
-								currCol = 0;
-							}
+				//remove (from play) qa pairs which do not have both question and answer content
+				ctr = questionsAndAnswersList->count();
+				while (ctr) {
+					memset(str, 0, STRLEN);
+					sprintf(str, questionsAndAnswersList->itemText(ctr - 7).toUtf8().data());
+					if (str[0] != '\0') {
+						memset(str, 0, STRLEN);
+						sprintf(str, questionsAndAnswersList->itemText(ctr - 3).toUtf8().data());
+						if (str[0] == '\0') {
+							questionsAndAnswersList->removeItem(ctr - 1);
+							questionsAndAnswersList->removeItem(ctr - 2);
+							questionsAndAnswersList->removeItem(ctr - 3);
+							questionsAndAnswersList->removeItem(ctr - 4);
+							questionsAndAnswersList->removeItem(ctr - 5);
+							questionsAndAnswersList->removeItem(ctr - 6);
+							questionsAndAnswersList->removeItem(ctr - 7);
+							questionsAndAnswersList->removeItem(ctr - 8);
 						}
-						memset(indexXMLChunk, 0, STRLEN);
 					}
-					fclose(file);
+					else {
+						questionsAndAnswersList->removeItem(ctr - 1);
+						questionsAndAnswersList->removeItem(ctr - 2);
+						questionsAndAnswersList->removeItem(ctr - 3);
+						questionsAndAnswersList->removeItem(ctr - 4);
+						questionsAndAnswersList->removeItem(ctr - 5);
+						questionsAndAnswersList->removeItem(ctr - 6);
+						questionsAndAnswersList->removeItem(ctr - 7);
+						questionsAndAnswersList->removeItem(ctr - 8);
+					}
+					ctr -= 8;
 				}
-				mediaTable->resizeColumnsToContents();
-				mediaTable->resizeRowsToContents();
 
-				//note that file has been loaded
+				//set up the start/end spinners, and flip to a random question/answer
+				ctr = questionsAndAnswersList->count() / 8;
+				startBox->setMinimum(1);
+				startBox->setMaximum(ctr);
+				startBox->setValue(1);
+				endBox->setMinimum(1);
+				endBox->setMaximum(ctr);
+				endBox->setValue(ctr);
+				questionsAndAnswersList->setCurrentIndex(5 - 4 * reversedCheckBox->isChecked());
+				advanceQorA();
+
+				//flag the file as loaded
 				fileIsLoaded->setChecked(true);
 			}
 		}
 		void updateButtonContents() {
 			int buttonWidth=currQorA->width(), buttonHeight=currQorA->height();
 			char str[STRLEN], newStr[STRLEN];
-			if (!strncmp(questionsAndAnswersList->itemText(questionsAndAnswersList->currentIndex() - 1).toUtf8().data(), "image", STRLEN)) {
+			FILE *file;
+			if (!strncmp(questionsAndAnswersList->itemText(questionsAndAnswersList->currentIndex() - 1).toUtf8().data(), "media", STRLEN)) {
+				sysprintf("echo %s/media/%s.* > %s/media.txt", TMPDIR, questionsAndAnswersList->currentText().toUtf8().data(), TMPDIR);
 				memset(str, 0, STRLEN);
-				sprintf(str, "%s/i/%s", TMPDIR, questionsAndAnswersList->currentText().toUtf8().data());
+				sprintf(str, "%s/media.txt", TMPDIR);
+				file = fopen(str, "r");
+				memset(str, 0, STRLEN);
+				fgets(str, STRLEN, file);
+				str[strlen(str) - 1] = '\0';
+				fclose(file);
+				sysprintf("rm %s/media.txt", TMPDIR);
 				currQorA->setIcon(QIcon(QPixmap(str).scaled(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
 				currQorA->setIconSize(QSize(buttonWidth - IMAGEBORDER, buttonHeight - IMAGEBORDER));
 			}
@@ -900,12 +809,41 @@ class YCQuiz : public QWidget {
 		}
 		void insertAnImage() {
 			int curRow = editTable->currentRow(), curCol = editTable->currentColumn();
-			if (curCol != -1 && curRow != -1) {
-				QString qStr = QFileDialog::getOpenFileName(this, tr("Open Image"), "/home/karam", tr("All Images (*.*)"));
+			if ((curCol == 0 || curCol == 3) && curRow != -1) {
+				QString qStr = QFileDialog::getOpenFileName(this, tr("Open Image"), "", tr("All Images (*.*)"));
 				if (!qStr.isNull()) {
-					qobject_cast<QComboBox*>(editTable->cellWidget(curRow, curCol/2*2))->setCurrentIndex(1);
-					QTableWidgetItem *cell2 = new QTableWidgetItem(qStr);
-					editTable->setItem(curRow, curCol/2*2 + 1, cell2);
+					QTableWidgetItem *cell = new QTableWidgetItem();
+					cell->setData(Qt::DecorationRole, QPixmap(qStr).scaledToHeight(EDIT_TABLE_IMG_HEIGHT, Qt::SmoothTransformation));
+					cell->setFlags(cell->flags() & ~Qt::ItemIsEditable);
+					editTable->setItem(curRow, curCol, cell);
+					if (curCol)
+						answerMediaSources->setItemText(curRow, qStr);
+					else
+						questionMediaSources->setItemText(curRow, qStr);
+				}
+			}
+		}
+		void insertAText() {
+			int curRow = editTable->currentRow(), curCol = editTable->currentColumn();
+			char str[STRLEN];
+
+			if ((curCol == 0 || curCol == 3) && curRow != -1) {
+				memset(str, 0, STRLEN);
+				if (curCol) {
+					sprintf(str, answerMediaSources->itemText(curRow).toUtf8().data());
+					if (str[0] != '\0') {
+						QTableWidgetItem *cell = new QTableWidgetItem();
+						editTable->setItem(curRow, curCol, cell);
+						answerMediaSources->setItemText(curRow, "");
+					}
+				}
+				else {
+					sprintf(str, questionMediaSources->itemText(curRow).toUtf8().data());
+					if (str[0] != '\0') {
+						QTableWidgetItem *cell = new QTableWidgetItem();
+						editTable->setItem(curRow, curCol, cell);
+						questionMediaSources->setItemText(curRow, "");
+					}
 				}
 			}
 		}

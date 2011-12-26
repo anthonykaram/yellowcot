@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.0, released YYYY-MM-DD
+	Yellowcot 1.2.0, released 2011-12-26
 
 	Copyleft 2011 Anthony Karam Karam
 
@@ -21,15 +21,12 @@
 
 YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 
-	//create general widgets
+	//create widgets
 	fileIsLoaded = new QCheckBox();
 	tabBar = new QTabBar;
 	tabBar->addTab(tr("Quiz"));
-	tabBar->addTab(tr("Media"));
-	tabBar->addTab(tr("Questions/Answers"));
+	tabBar->addTab(tr("Edit"));
 	questionsAndAnswersList = new QComboBox();
-
-	//create quiz tab widgets
 	currQorA = new QPushButton();
 	currQorA->setLayout(new QHBoxLayout());
 	currQorA->setEnabled(false);
@@ -49,70 +46,51 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	reversedLbl->setEnabled(false);
 	reversedCheckBox = new QCheckBox(tr("Swap Questions and Answers"));
 	reversedCheckBox->setEnabled(false);
-
-	//create media tab widgets
-	mediaTable = new QTableWidget(this);
-	mediaTable->setRowCount(0);
-	mediaTable->setColumnCount(5);
-	mediaTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-	mediaTable->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-	QTableWidgetItem *mediaheader0 = new QTableWidgetItem(tr("Preview"));
-	mediaTable->setHorizontalHeaderItem(0, mediaheader0);
-	QTableWidgetItem *mediaheader1 = new QTableWidgetItem(tr("Extension"));
-	mediaTable->setHorizontalHeaderItem(1, mediaheader1);
-	QTableWidgetItem *mediaheader2 = new QTableWidgetItem(tr("Source"));
-	mediaTable->setHorizontalHeaderItem(2, mediaheader2);
-	QTableWidgetItem *mediaheader3 = new QTableWidgetItem(tr("Licence"));
-	mediaTable->setHorizontalHeaderItem(3, mediaheader3);
-	QTableWidgetItem *mediaheader4 = new QTableWidgetItem(tr("Used?"));
-	mediaTable->setHorizontalHeaderItem(4, mediaheader4);
-	mediaTable->resizeColumnsToContents();
-	mediaTable->resizeRowsToContents();
-	mediaTable->setEnabled(false);
-	addMediaItem = new QPushButton(tr("Add Media Item"));
-	addMediaItem->setEnabled(false);
-	rmMediaItem = new QPushButton(tr("Remove Media Item"));
-	rmMediaItem->setEnabled(false);
-	mvMediaRowUp = new QPushButton(tr("Move Up"));
-	mvMediaRowUp->setEnabled(false);
-	mvMediaRowDown = new QPushButton(tr("Move Down"));
-	mvMediaRowDown->setEnabled(false);
-
-	//create questions/answers tab widgets
 	editTable = new QTableWidget(this);
 	editTable->setRowCount(0);
-	editTable->setColumnCount(8);
+	editTable->setColumnCount(6);
 	editTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 	editTable->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-	QTableWidgetItem *header0 = new QTableWidgetItem(tr("Question Type"));
+	QTableWidgetItem *header0 = new QTableWidgetItem(tr("Question"));
 	editTable->setHorizontalHeaderItem(0, header0);
-	QTableWidgetItem *header1 = new QTableWidgetItem(tr("Question"));
+	QTableWidgetItem *header1 = new QTableWidgetItem(tr("Question Source"));
 	editTable->setHorizontalHeaderItem(1, header1);
-	QTableWidgetItem *header2 = new QTableWidgetItem(tr("Question Source"));
+	QTableWidgetItem *header2 = new QTableWidgetItem(tr("Question Licence"));
 	editTable->setHorizontalHeaderItem(2, header2);
-	QTableWidgetItem *header3 = new QTableWidgetItem(tr("Question Licence"));
+	QTableWidgetItem *header3 = new QTableWidgetItem(tr("Answer"));
 	editTable->setHorizontalHeaderItem(3, header3);
-	QTableWidgetItem *header4 = new QTableWidgetItem(tr("Answer Type"));
+	QTableWidgetItem *header4 = new QTableWidgetItem(tr("Answer Source"));
 	editTable->setHorizontalHeaderItem(4, header4);
-	QTableWidgetItem *header5 = new QTableWidgetItem(tr("Answer"));
+	QTableWidgetItem *header5 = new QTableWidgetItem(tr("Answer Licence"));
 	editTable->setHorizontalHeaderItem(5, header5);
-	QTableWidgetItem *header6 = new QTableWidgetItem(tr("Answer Source"));
-	editTable->setHorizontalHeaderItem(6, header6);
-	QTableWidgetItem *header7 = new QTableWidgetItem(tr("Answer Licence"));
-	editTable->setHorizontalHeaderItem(7, header7);
 	editTable->resizeColumnsToContents();
 	editTable->resizeRowsToContents();
 	editTable->setEnabled(false);
 	insertRow = new QPushButton(tr("Insert Row"));
 	removeRow = new QPushButton(tr("Remove Row"));
-	moveRowUp = new QPushButton(tr("Move Up"));
-	moveRowDown = new QPushButton(tr("Move Down"));
+	moveRowUp = new QPushButton(tr("Move Row Up"));
+	moveRowDown = new QPushButton(tr("Move Row Down"));
 	insertImage = new QPushButton(tr("Insert Image"));
+	insertText = new QPushButton(tr("Insert Text"));
 	insertRow->setEnabled(false);
 	removeRow->setEnabled(false);
 	moveRowUp->setEnabled(false);
 	moveRowDown->setEnabled(false);
 	insertImage->setEnabled(false);
+	insertText->setEnabled(false);
+	questionMediaSources = new QComboBox();
+	answerMediaSources = new QComboBox();
+	showLicencingData = new QCheckBox(tr("Show Licencing Data"));
+	showLicencingData->setEnabled(false);
+
+	//hide licencing columns
+	editTable->setColumnHidden(1, true);
+	editTable->setColumnHidden(2, true);
+	editTable->setColumnHidden(4, true);
+	editTable->setColumnHidden(5, true);
+
+	//respond appropriately if the showLicencingData checkbox is checked/unchecked
+	connect(showLicencingData, SIGNAL(stateChanged(int)), this, SLOT(toggleLicencing()));
 
 	//give the tab bar control over which widgets are visible at any given time
 	connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(updateVisibleWidgets()));
@@ -131,12 +109,11 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	connect(moveRowUp, SIGNAL(clicked()), this, SLOT(moveTheRowUp()));
 	connect(moveRowDown, SIGNAL(clicked()), this, SLOT(moveTheRowDown()));
 
-	//move a media row depending on which button is clicked
-	connect(mvMediaRowUp, SIGNAL(clicked()), this, SLOT(moveTheMediaRowUp()));
-	connect(mvMediaRowDown, SIGNAL(clicked()), this, SLOT(moveTheMediaRowDown()));
-
 	//insert an image if the button is clicked
 	connect(insertImage, SIGNAL(clicked()), this, SLOT(insertAnImage()));
+
+	//insert a text if the button is clicked
+	connect(insertText, SIGNAL(clicked()), this, SLOT(insertAText()));
 
 	//organise widgets on a layout
 	QGridLayout *mainLayout = new QGridLayout;
@@ -148,16 +125,15 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	mainLayout->addWidget(endBox, 2, 3);
 	mainLayout->addWidget(reversedLbl, 3, 0);
 	mainLayout->addWidget(reversedCheckBox, 3, 1, 1, 3);
-	mainLayout->addWidget(mediaTable, 4, 0, 1, 4);
-	mainLayout->addWidget(addMediaItem, 5, 0, 1, 2);
-	mainLayout->addWidget(rmMediaItem, 5, 2, 1, 2);
-	mainLayout->addWidget(mvMediaRowUp, 6, 0, 1, 2);
-	mainLayout->addWidget(mvMediaRowDown, 6, 2, 1, 2);
-	mainLayout->addWidget(editTable, 7, 0, 1, 4);
-	mainLayout->addWidget(insertRow, 8, 0, 1, 2);
-	mainLayout->addWidget(removeRow, 8, 2, 1, 2);
-	mainLayout->addWidget(moveRowUp, 9, 0, 1, 2);
-	mainLayout->addWidget(moveRowDown, 9, 2, 1, 2);
-	mainLayout->addWidget(insertImage, 10, 0, 1, 4);
+	mainLayout->addWidget(showLicencingData, 4, 0, 1, 4);
+	mainLayout->addWidget(editTable, 5, 0, 1, 4);
+	mainLayout->addWidget(insertRow, 6, 0, 1, 2);
+	mainLayout->addWidget(removeRow, 6, 2, 1, 2);
+	mainLayout->addWidget(moveRowUp, 7, 0, 1, 2);
+	mainLayout->addWidget(moveRowDown, 7, 2, 1, 2);
+	mainLayout->addWidget(insertImage, 8, 0, 1, 2);
+	mainLayout->addWidget(insertText, 8, 2, 1, 2);
+
+	//use the layout
 	setLayout(mainLayout);
 }
