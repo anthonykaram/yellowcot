@@ -20,8 +20,8 @@
 #include <stdarg.h>
 
 #define VERSION "1.2.1"
-#define STRLEN 1000
 #define MINWIDTH 500
+#define STRLEN 1000
 #define MINHEIGHT 300
 #define IMAGEBORDER 12
 #define EDIT_TABLE_IMG_HEIGHT 50
