@@ -40,7 +40,9 @@ class MainWindow : public QMainWindow {
 
 	public slots:
 		void open(){
-			filePathLbl->setText(QFileDialog::getOpenFileName(this, tr("Open Yellowcot File"), "", tr("Yellowcot Files (*.yc)")));
+			QString qStr = QFileDialog::getOpenFileName(this, tr("Open Yellowcot File"), "", tr("Yellowcot Files (*.yc)"));
+			if (!(qStr.isNull()))
+				filePathLbl->setText(qStr);
 		}
 		void help() {
 			QMessageBox::information(this, tr("Help"), tr("Coming soon..."));
