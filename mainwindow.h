@@ -1,7 +1,7 @@
 /*
-	Yellowcot 1.2.0, released 2011-12-26
+	Yellowcot 1.2.1, released 2012-01-12
 
-	Copyleft 2011 Anthony Karam Karam
+	Copyleft 2012 Anthony Karam Karam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -44,6 +44,9 @@ class MainWindow : public QMainWindow {
 		}
 		void help() {
 			QMessageBox::information(this, tr("Help"), tr("Coming soon..."));
+		}
+		void saveAs() {
+			QMessageBox::information(this, tr("Save As"), tr("Coming soon..."));
 		}
 		void about() {
 			QMessageBox::information(this, tr("About Yellowcot"), tr("<h3>version ")+QString(VERSION)+tr("</h3><p align=justify>Website: <a href=http://code.google.com/p/yellowcot>code.google.com/p/yellowcot</a></p><p align=justify>Written by Anthony Karam. Special thanks to the GNU LGPL project, <a href=http://code.google.com/p/qticonloader>qticonloader</a> (SVN revision 897 used in Yellowcot ")+QString(VERSION)+tr(").</p>"));

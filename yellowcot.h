@@ -1,7 +1,7 @@
 /*
-	Yellowcot 1.2.0, released 2011-12-26
+	Yellowcot 1.2.1, released 2012-01-12
 
-	Copyleft 2011 Anthony Karam Karam
+	Copyleft 2012 Anthony Karam Karam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -570,7 +570,7 @@ class YCQuiz : public QWidget {
 				moveRowDown->setEnabled(true);
 				insertImage->setEnabled(true);
 				insertText->setEnabled(true);
-				sysprintf("rm -r %s/media > /dev/null 2>&1 ; tar xf \"%s\" -C %s ; ", TMPDIR, theFilePath->text().toUtf8().data(), TMPDIR);
+				sysprintf("rm -r %s/* > /dev/null 2>&1 ; tar xf \"%s\" -C %s ; ", TMPDIR, theFilePath->text().toUtf8().data(), TMPDIR);
 				memset(str, 0, STRLEN);
 				sprintf(str, "%s/index.xml", TMPDIR);
 				file = fopen(str, "r");
@@ -897,6 +897,14 @@ class YCQuiz : public QWidget {
 
 			//clear big question/answer button
 			advanceQorA();
+
+			//set edit table column headers
+			editTable->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Question")));
+			editTable->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Question Source")));
+			editTable->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Question Licence")));
+			editTable->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Answer")));
+			editTable->setHorizontalHeaderItem(4, new QTableWidgetItem(tr("Answer Source")));
+			editTable->setHorizontalHeaderItem(5, new QTableWidgetItem(tr("Answer Licence")));
 		}
 };
 
