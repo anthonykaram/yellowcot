@@ -31,6 +31,14 @@ MainWindow::MainWindow() {
 
 	//create and populate file menu in menu bar
 	QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
+	QAction *newAct = new QAction(QtIconLoader::icon("document-new"), tr("&New"), this);
+	QSignalMapper *signalMapper0 = new QSignalMapper(this);
+	connect(newAct, SIGNAL(triggered()), signalMapper0, SLOT(map()));
+	signalMapper0->setMapping(newAct, filePathLbl);
+	connect(signalMapper0, SIGNAL(mapped(QWidget*)), ycQuiz, SLOT(startNewFile(QWidget*)));
+	newAct->setShortcut(tr("Ctrl+N", "New"));
+	fileMenu->addAction(newAct);
+	fileMenu->addSeparator();
 	QAction *openAct = new QAction(QtIconLoader::icon("document-open"), tr("&Open"), this);
 	connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 	QSignalMapper *signalMapper1 = new QSignalMapper(this);
@@ -76,7 +84,6 @@ MainWindow::MainWindow() {
 	setWindowTitle(tr("Yellowcot"));
 	setWindowIcon(QIcon(QString("/usr/share/yellowcot/yellowcot.svg")));
 
-	//set the status label
-	statusLabel = new QLabel(tr("Waiting for the questions/answers file to be opened."));
-	statusBar()->addPermanentWidget(statusLabel);
+	//set up the status label to show filePathLbl
+	statusBar()->addPermanentWidget(filePathLbl);
 }

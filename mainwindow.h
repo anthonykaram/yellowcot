@@ -41,8 +41,6 @@ class MainWindow : public QMainWindow {
 	public slots:
 		void open(){
 			filePathLbl->setText(QFileDialog::getOpenFileName(this, tr("Open Yellowcot File"), "", tr("Yellowcot Files (*.yc)")));
-			if (!filePathLbl->text().isNull())
-				statusLabel->setText(QString("Using <i>")+filePathLbl->text()+QString("</i>."));
 		}
 		void help() {
 			QMessageBox::information(this, tr("Help"), tr("Coming soon..."));

@@ -29,23 +29,16 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	questionsAndAnswersList = new QComboBox();
 	currQorA = new QPushButton();
 	currQorA->setLayout(new QHBoxLayout());
-	currQorA->setEnabled(false);
 	currQorA->setMinimumWidth(MINWIDTH);
 	currQorA->setMinimumHeight(MINHEIGHT);
 	currQorA->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	rangeLbl = new QLabel(tr("Range:"));
-	rangeLbl->setEnabled(false);
 	startBox = new QSpinBox();
-	startBox->setEnabled(false);
 	toLbl = new QLabel(tr("to"));
 	toLbl->setAlignment(Qt::AlignCenter);
-	toLbl->setEnabled(false);
 	endBox = new QSpinBox();
-	endBox->setEnabled(false);
 	reversedLbl = new QLabel(tr("Reversed Mode:"));
-	reversedLbl->setEnabled(false);
 	reversedCheckBox = new QCheckBox(tr("Swap Questions and Answers"));
-	reversedCheckBox->setEnabled(false);
 	editTable = new QTableWidget(this);
 	editTable->setRowCount(0);
 	editTable->setColumnCount(6);
@@ -65,23 +58,15 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 	editTable->setHorizontalHeaderItem(5, header5);
 	editTable->resizeColumnsToContents();
 	editTable->resizeRowsToContents();
-	editTable->setEnabled(false);
 	insertRow = new QPushButton(tr("Insert Row"));
 	removeRow = new QPushButton(tr("Remove Row"));
 	moveRowUp = new QPushButton(tr("Move Row Up"));
 	moveRowDown = new QPushButton(tr("Move Row Down"));
 	insertImage = new QPushButton(tr("Insert Image"));
 	insertText = new QPushButton(tr("Insert Text"));
-	insertRow->setEnabled(false);
-	removeRow->setEnabled(false);
-	moveRowUp->setEnabled(false);
-	moveRowDown->setEnabled(false);
-	insertImage->setEnabled(false);
-	insertText->setEnabled(false);
 	questionMediaSources = new QComboBox();
 	answerMediaSources = new QComboBox();
 	showLicencingData = new QCheckBox(tr("Show Licencing Data"));
-	showLicencingData->setEnabled(false);
 
 	//hide licencing columns
 	editTable->setColumnHidden(1, true);
@@ -136,4 +121,7 @@ YCQuiz::YCQuiz(QWidget *parent) : QWidget(parent) {
 
 	//use the layout
 	setLayout(mainLayout);
+
+	//clear everything
+	clearEverything();
 }

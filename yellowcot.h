@@ -343,6 +343,13 @@ class YCQuiz : public QWidget {
 		}
 		void saveFile(QWidget *qLbl) {
 			QLabel *theFilePath = qobject_cast<QLabel*>(qLbl);
+			if (theFilePath->text().isNull()) {
+				QString qStr = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("Yellowcot Files (*.yc)"));
+				if (!(qStr.isNull())) {
+					theFilePath->setText(qStr);
+					fileIsLoaded->setChecked(true);
+				}
+			}
 			if (!(theFilePath->text().isNull())) {
 				int i, mediaCtr = 1;
 				char str[STRLEN];
@@ -563,7 +570,7 @@ class YCQuiz : public QWidget {
 				moveRowDown->setEnabled(true);
 				insertImage->setEnabled(true);
 				insertText->setEnabled(true);
-				sysprintf("rm -r %s/* > /dev/null 2>&1 ; tar xf \"%s\" -C %s ; ", TMPDIR, theFilePath->text().toUtf8().data(), TMPDIR);
+				sysprintf("rm -r %s/media > /dev/null 2>&1 ; tar xf \"%s\" -C %s ; ", TMPDIR, theFilePath->text().toUtf8().data(), TMPDIR);
 				memset(str, 0, STRLEN);
 				sprintf(str, "%s/index.xml", TMPDIR);
 				file = fopen(str, "r");
@@ -846,6 +853,50 @@ class YCQuiz : public QWidget {
 					}
 				}
 			}
+		}
+		void startNewFile(QWidget *qLbl) {
+
+			//clear theFilePath
+			QLabel *theFilePath = qobject_cast<QLabel*>(qLbl);
+			theFilePath->setText(QString());
+
+			//flag the file as not-loaded
+			fileIsLoaded->setChecked(false);
+
+			//clear everything
+			clearEverything();
+
+		}
+		void clearEverything() {
+
+			//clear widgets
+			questionsAndAnswersList->clear();
+			questionMediaSources->clear();
+			answerMediaSources->clear();
+			questionMediaSources->addItem("");
+			answerMediaSources->addItem("");
+			editTable->clear();
+			editTable->setRowCount(1);
+
+			//set up the start/end spinners just as if a file with no questions/answers had been loaded
+			startBox->setMinimum(1);
+			startBox->setMaximum(0);
+			startBox->setValue(0);
+			endBox->setMinimum(1);
+			endBox->setMaximum(0);
+			endBox->setValue(0);
+
+			//create variable
+			int j;
+
+			//add cells to edit table row
+			for (j = 0 ; j < 6 ; j++) {
+				QTableWidgetItem *cell = new QTableWidgetItem();
+				editTable->setItem(0, j, cell);
+			}
+
+			//clear big question/answer button
+			advanceQorA();
 		}
 };
 
