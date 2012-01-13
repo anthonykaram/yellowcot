@@ -1,7 +1,7 @@
 /*
-	Yellowcot 1.2.0, released 2011-12-26
+	Yellowcot 1.2.1, released 2012-01-12
 
-	Copyleft 2011 Anthony Karam Karam
+	Copyleft 2012 Anthony Karam Karam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -59,6 +59,9 @@ MainWindow::MainWindow() {
 	connect(signalMapper3, SIGNAL(mapped(QWidget*)), ycQuiz, SLOT(loadFile(QWidget*)));
 	saveAct->setShortcut(tr("Ctrl+S", "Save"));
 	fileMenu->addAction(saveAct);
+	QAction *saveAsAct = new QAction(QtIconLoader::icon("document-save-as"), tr("Save &As..."), this);
+	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+	fileMenu->addAction(saveAsAct);
 	fileMenu->addSeparator();
 	QAction *exitAct = new QAction(QtIconLoader::icon("application-exit"), tr("&Quit"), this);
 	connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
