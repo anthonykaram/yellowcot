@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.1, released 2012-01-12
+	Yellowcot 1.2.2, released 2012-02-23
 
 	Copyleft 2012 Anthony Karam Karam
 
@@ -905,6 +905,71 @@ class YCQuiz : public QWidget {
 			editTable->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Answer")));
 			editTable->setHorizontalHeaderItem(4, new QTableWidgetItem(tr("Answer Source")));
 			editTable->setHorizontalHeaderItem(5, new QTableWidgetItem(tr("Answer Licence")));
+		}
+		void exportToPDF() {
+
+			//get ready
+			char str[STRLEN];
+
+			//determine number of qa pairs
+			int num = endBox->maximum();
+
+			//determine card width and height
+			int card_w = EXPORT_PAGE_W * EXPORT_DPI / 2 - EXPORT_PAGE_BORDER;
+			int card_h = (EXPORT_PAGE_H * EXPORT_DPI - 2 * EXPORT_PAGE_BORDER) / EXPORT_PAGE_ROWS;
+
+			//make white card image
+			sysprintf("convert -size %dx%d canvas:white %s/white_card.png", card_w - EXPORT_BLACK_BORDER_W * 2 - EXPORT_WHITE_BORDER_W * 2, card_h - EXPORT_BLACK_BORDER_W * 2 - EXPORT_WHITE_BORDER_W * 2, TMPDIR);
+
+			//loop through cards, creating an image for each
+			int i;
+			for (i = 0; i < num ; i++) {
+
+				//create image for question card
+				if (!QString::compare(questionsAndAnswersList->itemText(i*8), QString("media")))
+					sysprintf("convert %s/media/%s.* -resize %dx%d %s/%d_a.png", TMPDIR, questionsAndAnswersList->itemText(i*8 + 1).toUtf8().data(), card_w - EXPORT_BLACK_BORDER_W * 2 - EXPORT_WHITE_BORDER_W * 2, card_h - EXPORT_BLACK_BORDER_W * 2 - EXPORT_WHITE_BORDER_W * 2, TMPDIR, i);
+				else {
+					memset(str, 0, STRLEN);
+					addSlashes(questionsAndAnswersList->itemText(i * 8 + 1).toUtf8().data(), str);
+					sysprintf("font=$(more ~/.yellowcot/config | grep \"font=\") ; fontsize=$(more ~/.yellowcot/config | grep \"fontsize=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" %s/%d_a.png ; else convert -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" %s/%d_a.png ; fi", card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i, card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i);
+				}
+				sysprintf("composite -gravity center %s/%d_a.png %s/white_card.png %s/%d_a.png", TMPDIR, i, TMPDIR, TMPDIR, i);
+
+				//create image for answer card
+				if (!QString::compare(questionsAndAnswersList->itemText(i*8 + 4), QString("media")))
+					sysprintf("convert %s/media/%s.* -resize %dx%d %s/%d_b.png", TMPDIR, questionsAndAnswersList->itemText(i*8 + 5).toUtf8().data(), card_w - EXPORT_BLACK_BORDER_W * 2 - EXPORT_WHITE_BORDER_W * 2, card_h - EXPORT_BLACK_BORDER_W * 2 - EXPORT_WHITE_BORDER_W * 2, TMPDIR, i);
+				else {
+					memset(str, 0, STRLEN);
+					addSlashes(questionsAndAnswersList->itemText(i * 8 + 5).toUtf8().data(), str);
+					sysprintf("font=$(more ~/.yellowcot/config | grep \"font=\") ; fontsize=$(more ~/.yellowcot/config | grep \"fontsize=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" %s/%d_b.png ; else convert -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" %s/%d_b.png ; fi", card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i, card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i);
+				}
+				sysprintf("composite -gravity center %s/%d_b.png %s/white_card.png %s/%d_b.png", TMPDIR, i, TMPDIR, TMPDIR, i);
+
+			}
+
+			//add black border and white border to all card images
+			sysprintf("mogrify -bordercolor black -border %d %s/*_a.png", EXPORT_BLACK_BORDER_W, TMPDIR);
+			sysprintf("mogrify -bordercolor white -border %d %s/*_a.png", EXPORT_WHITE_BORDER_W, TMPDIR);
+			sysprintf("mogrify -bordercolor black -border %d %s/*_b.png", EXPORT_BLACK_BORDER_W, TMPDIR);
+			sysprintf("mogrify -bordercolor white -border %d %s/*_b.png", EXPORT_WHITE_BORDER_W, TMPDIR);
+
+			//loop through cards, placing their images on white sheets
+			int pagenum = 0;
+			for (i = 0; i < num; i++) {
+				if (!(i%EXPORT_PAGE_ROWS))
+					sysprintf("convert -size %dx%d canvas:white %s/%d_c.png", (int)(EXPORT_PAGE_W * EXPORT_DPI), (int)(EXPORT_PAGE_H * EXPORT_DPI), TMPDIR, pagenum++);
+				sysprintf("convert %s/%d_c.png %s/%d_a.png -geometry +%d+%d -composite %s/%d_c.png", TMPDIR, pagenum - 1, TMPDIR, i, EXPORT_PAGE_BORDER, EXPORT_PAGE_BORDER + card_h * (i%EXPORT_PAGE_ROWS), TMPDIR, pagenum - 1);
+				sysprintf("convert %s/%d_c.png %s/%d_b.png -geometry +%d+%d -composite %s/%d_c.png", TMPDIR, pagenum - 1, TMPDIR, i, EXPORT_PAGE_BORDER + card_w, EXPORT_PAGE_BORDER + card_h * (i%EXPORT_PAGE_ROWS), TMPDIR, pagenum - 1);
+			}
+
+			//create PDF file from PNG images of pages
+			sysprintf("convert %s/*_c.png ~/flash_cards.pdf", TMPDIR);
+
+			//clean up tmp dir
+			sysprintf("rm %s/*_a.png %s/*_b.png %s/*_c.png %s/white_card.png", TMPDIR, TMPDIR, TMPDIR, TMPDIR);
+
+			//inform user that export is complete
+			QMessageBox::information(this, tr("Export"), tr("Flash cards exported to ~/flash_cards.pdf"));
 		}
 };
 
