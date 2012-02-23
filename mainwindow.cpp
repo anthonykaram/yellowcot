@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.1, released 2012-01-12
+	Yellowcot 1.2.2, released 2012-02-23
 
 	Copyleft 2012 Anthony Karam Karam
 
@@ -62,6 +62,10 @@ MainWindow::MainWindow() {
 	QAction *saveAsAct = new QAction(QtIconLoader::icon("document-save-as"), tr("Save &As..."), this);
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 	fileMenu->addAction(saveAsAct);
+	fileMenu->addSeparator();
+	QAction *pdfAct = new QAction(tr("&Export to PDF"), this);
+	connect(pdfAct, SIGNAL(triggered()), ycQuiz, SLOT(exportToPDF()));
+	fileMenu->addAction(pdfAct);
 	fileMenu->addSeparator();
 	QAction *exitAct = new QAction(QtIconLoader::icon("application-exit"), tr("&Quit"), this);
 	connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));

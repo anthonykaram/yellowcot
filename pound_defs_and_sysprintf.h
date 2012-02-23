@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.1, released 2012-01-12
+	Yellowcot 1.2.2, released 2012-02-23
 
 	Copyleft 2012 Anthony Karam Karam
 
@@ -19,13 +19,20 @@
 
 #include <stdarg.h>
 
-#define VERSION "1.2.1"
+#define VERSION "1.2.2"
 #define MINWIDTH 500
 #define STRLEN 1000
 #define MINHEIGHT 300
 #define IMAGEBORDER 12
 #define EDIT_TABLE_IMG_HEIGHT 50
 #define TMPDIR "/var/tmp/yellowcot_quiz"
+#define EXPORT_DPI 72
+#define EXPORT_PAGE_W 8.5
+#define EXPORT_PAGE_H 11
+#define EXPORT_PAGE_ROWS 5
+#define EXPORT_PAGE_BORDER 50
+#define EXPORT_BLACK_BORDER_W 2
+#define EXPORT_WHITE_BORDER_W 2
 
 inline void sysprintf(const char *fmt, ...) {
 	char str[STRLEN];
