@@ -931,7 +931,7 @@ class YCQuiz : public QWidget {
 				else {
 					memset(str, 0, STRLEN);
 					addSlashes(questionsAndAnswersList->itemText(i * 8 + 1).toUtf8().data(), str);
-					sysprintf("font=$(more ~/.yellowcot/config | grep \"font=\") ; fontsize=$(more ~/.yellowcot/config | grep \"fontsize=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" %s/%d_a.png ; else convert -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" %s/%d_a.png ; fi", card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i, card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i);
+					sysprintf("font=$(more ~/.yellowcot/config | grep \"font=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize %d -size %dx caption:\"%s\" %s/%d_a.png ; else convert -gravity Center -background transparent -pointsize %d -size %dx caption:\"%s\" %s/%d_a.png ; fi", EXPORT_FONT_SIZE, card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i, EXPORT_FONT_SIZE, card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i);
 				}
 				sysprintf("composite -gravity center %s/%d_a.png %s/white_card.png %s/%d_a.png", TMPDIR, i, TMPDIR, TMPDIR, i);
 
@@ -941,7 +941,7 @@ class YCQuiz : public QWidget {
 				else {
 					memset(str, 0, STRLEN);
 					addSlashes(questionsAndAnswersList->itemText(i * 8 + 5).toUtf8().data(), str);
-					sysprintf("font=$(more ~/.yellowcot/config | grep \"font=\") ; fontsize=$(more ~/.yellowcot/config | grep \"fontsize=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" %s/%d_b.png ; else convert -gravity Center -background transparent -pointsize ${fontsize:9} -size %dx caption:\"%s\" %s/%d_b.png ; fi", card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i, card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i);
+					sysprintf("font=$(more ~/.yellowcot/config | grep \"font=\") ; if echo $font | grep -q -v \"^[#]\" ; then convert -font ${font:5} -gravity Center -background transparent -pointsize %d -size %dx caption:\"%s\" %s/%d_b.png ; else convert -gravity Center -background transparent -pointsize %d -size %dx caption:\"%s\" %s/%d_b.png ; fi", EXPORT_FONT_SIZE, card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i, EXPORT_FONT_SIZE, card_w - 2 * EXPORT_BLACK_BORDER_W - 2 * EXPORT_WHITE_BORDER_W, str, TMPDIR, i);
 				}
 				sysprintf("composite -gravity center %s/%d_b.png %s/white_card.png %s/%d_b.png", TMPDIR, i, TMPDIR, TMPDIR, i);
 

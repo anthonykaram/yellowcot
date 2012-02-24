@@ -26,13 +26,14 @@
 #define IMAGEBORDER 12
 #define EDIT_TABLE_IMG_HEIGHT 50
 #define TMPDIR "/var/tmp/yellowcot_quiz"
-#define EXPORT_DPI 72
+#define EXPORT_DPI 300
 #define EXPORT_PAGE_W 8.5
 #define EXPORT_PAGE_H 11
 #define EXPORT_PAGE_ROWS 5
-#define EXPORT_PAGE_BORDER 50
-#define EXPORT_BLACK_BORDER_W 2
-#define EXPORT_WHITE_BORDER_W 2
+#define EXPORT_PAGE_BORDER 200
+#define EXPORT_BLACK_BORDER_W 8
+#define EXPORT_WHITE_BORDER_W 8
+#define EXPORT_FONT_SIZE 64
 
 inline void sysprintf(const char *fmt, ...) {
 	char str[STRLEN];
