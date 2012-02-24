@@ -963,7 +963,7 @@ class YCQuiz : public QWidget {
 			}
 
 			//create PDF file from PNG images of pages
-			sysprintf("convert %s/*_c.png ~/flash_cards.pdf", TMPDIR);
+			sysprintf("convert -density %d %s/*_c.png ~/flash_cards.pdf", EXPORT_DPI, TMPDIR);
 
 			//clean up tmp dir
 			sysprintf("rm %s/*_a.png %s/*_b.png %s/*_c.png %s/white_card.png", TMPDIR, TMPDIR, TMPDIR, TMPDIR);
