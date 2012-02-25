@@ -963,10 +963,14 @@ class YCQuiz : public QWidget {
 			}
 
 			//create jpeg-compressed PDF file from PNG images of pages
-			sysprintf("convert -density %d -compress jpeg %s/*_c.png ~/flash_cards.pdf", EXPORT_DPI, TMPDIR);
+			sysprintf("echo -n \"convert -density %d -compress jpeg\" > %s/export.sh", EXPORT_DPI, TMPDIR);
+			for (i = 0 ; i < num / (EXPORT_PAGE_ROWS + 1) + 1; i++)
+				sysprintf("echo -n \" %d_c.png\" >> %s/export.sh", i, TMPDIR);
+			sysprintf("echo \" ~/flash_cards.pdf\" >> %s/export.sh", TMPDIR);
+			sysprintf("cd %s ; sh export.sh", TMPDIR);
 
 			//clean up tmp dir
-			sysprintf("rm %s/*_a.png %s/*_b.png %s/*_c.png %s/white_card.png", TMPDIR, TMPDIR, TMPDIR, TMPDIR);
+			sysprintf("cd %s ; rm *_a.png *_b.png *_c.png white_card.png export.sh", TMPDIR);
 
 			//inform user that export is complete
 			QMessageBox::information(this, tr("Export"), tr("Flash cards exported to ~/flash_cards.pdf"));
