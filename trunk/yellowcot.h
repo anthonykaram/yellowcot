@@ -964,7 +964,7 @@ class YCQuiz : public QWidget {
 
 			//create jpeg-compressed PDF file from PNG images of pages
 			sysprintf("echo -n \"convert -density %d -compress jpeg\" > %s/export.sh", EXPORT_DPI, TMPDIR);
-			for (i = 0 ; i < num / (EXPORT_PAGE_ROWS + 1) + 1; i++)
+			for (i = 0 ; i < (num - 1) / EXPORT_PAGE_ROWS + 1; i++)
 				sysprintf("echo -n \" %d_c.png\" >> %s/export.sh", i, TMPDIR);
 			sysprintf("echo \" ~/flash_cards.pdf\" >> %s/export.sh", TMPDIR);
 			sysprintf("cd %s ; sh export.sh", TMPDIR);
