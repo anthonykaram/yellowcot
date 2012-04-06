@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.3, released 2012-02-24
+	Yellowcot 1.2.4, released 2012-04-05
 
 	Copyleft 2012 Anthony Karam Karam
 
@@ -360,7 +360,7 @@ class YCQuiz : public QWidget {
 				memset(str, 0, STRLEN);
 				sprintf(str, "%s/new/index.xml", TMPDIR);
 				file = fopen(str, "a+");
-				fprintf(file, "<quiz>\n");
+				fprintf(file, "<quiz version=\"1.0\">\n");
 				for (i = 0; i < editTable->rowCount(); i++) {
 
 					//begin qa section
