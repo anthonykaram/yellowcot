@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.3, released 2012-02-24
+	Yellowcot 1.2.4, released 2012-04-05
 
 	Copyleft 2012 Anthony Karam Karam
 
