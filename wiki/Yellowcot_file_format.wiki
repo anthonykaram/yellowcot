@@ -30,6 +30,8 @@ Per revision 1.0, a Yellowcot file is an uncompressed tarball including an _inde
 </quiz>
 }}}
 
+Example (revision 1.0) Yellowcot file: [http://yellowcot.googlecode.com/files/Chemical_Elements_1.0.yc Chemical_Elements_1.0.yc]
+
 ===Revision 0.4===
 
 Per revision 0.4, a Yellowcot file is an uncompressed tarball including an _index.xml_ and a _media_ directory. The _media_ directory stores audio, image, and video files numbered sequentially. The _index.xml_ file stores the questions and answers that make up the flash card set. An example _index.xml_ file is shown below. The markup defines two question and answer pairs.
@@ -55,6 +57,8 @@ Per revision 0.4, a Yellowcot file is an uncompressed tarball including an _inde
 	</qa>
 </quiz>
 }}}
+
+Example (revision 0.4) Yellowcot file: [http://yellowcot.googlecode.com/files/Chemical_Elements_0.4.yc Chemical_Elements_0.4.yc]
 
 ===Revision 0.3===
 
@@ -82,6 +86,8 @@ Per revision 0.3, a Yellowcot file is an uncompressed tarball including an _inde
 </quiz>
 }}}
 
+Example (revision 0.3) Yellowcot file: [http://yellowcot.googlecode.com/files/Chemical_Elements_0.3.yc Chemical_Elements_0.3.yc]
+
 ===Revision 0.2===
 
 Per revision 0.2, a Yellowcot file is an uncompressed tarball including an _index.xml_ and directories to store audio, image, and video files. The _index.xml_ file stores the questions and answers that make up the flash card set. An example _index.xml_ file is shown below. The markup defines two question and answer pairs.
@@ -100,6 +106,8 @@ Per revision 0.2, a Yellowcot file is an uncompressed tarball including an _inde
 </quiz>
 }}}
 
+Example (revision 0.2) Yellowcot file: [http://yellowcot.googlecode.com/files/Chemical_Elements_0.2.yc Chemical_Elements_0.2.yc]
+
 ===Revision 0.1===
 
 Per revision 0.1, a Yellowcot file is a simple text file. Each odd-numbered line is a question; each even-numbered line is an answer. An example file is shown below. The markup defines two question and answer pairs.
@@ -110,3 +118,5 @@ leðurblaka (fs)
 chicken
 hænsnakjöt (ns) / hænsni (ns) / kjúklingur (ms)
 }}}
+
+Example (revision 0.1) Yellowcot file: [http://yellowcot.googlecode.com/files/Chemical_Elements_0.1.yc Chemical_Elements_0.1.yc]
