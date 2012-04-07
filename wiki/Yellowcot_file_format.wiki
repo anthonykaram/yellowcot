@@ -1,0 +1,74 @@
+=Yellowcot file format=
+
+Yellowcot introduces a standard, XML-based, open file format for multimedia flash card sets. The latest revision of the file format is 1.0.
+
+===Revision 1.0===
+
+Per revision 1.0, a Yellowcot file is an uncompressed tarball including an _index.xml_ and a _media_ directory. Revision 1.0 is identical to revision 0.4 except for the addition of a definition of the file format version in the _quiz_ tag. The _media_ directory stores audio, image, and video files numbered sequentially. The _index.xml_ file stores the questions and answers that make up the flash card set. An example _index.xml_ file is shown below. The markup defines two question and answer pairs.
+
+{{{
+<?xml version="1.0"?>
+<quiz version="1.0">
+	<qa>
+		<q type="media">1</q>
+		<qsrc>http://commons.wikimedia.org/wiki/File:Big-eared-townsend-fledermaus.jpg</qsrc>
+		<qlic>PD</qlic>
+		<a type="text">leðurblaka (fs)</a>
+		<asrc></asrc>
+		<alic></alic>
+	</qa>
+	<qa>
+		<q type="media">2</q>
+		<qsrc>http://commons.wikimedia.org/wiki/File:Female_pair.jpg</qsrc>
+		<qlic>CC-BY-SA 2.0</qlic>
+		<a type="text">hænsnakjöt (ns) / hænsni (ns) / kjúklingur (ms)</a>
+		<asrc></asrc>
+		<alic></alic>
+	</qa>
+</quiz>
+}}}
+
+===Revision 0.4===
+
+Per revision 0.4, a Yellowcot file is an uncompressed tarball including an _index.xml_ and a _media_ directory. The _media_ directory stores audio, image, and video files numbered sequentially. The _index.xml_ file stores the questions and answers that make up the flash card set. An example _index.xml_ file is shown below. The markup defines two question and answer pairs.
+
+{{{
+<?xml version="1.0"?>
+<quiz>
+	<qa>
+		<q type="media">1</q>
+		<qsrc>http://commons.wikimedia.org/wiki/File:Big-eared-townsend-fledermaus.jpg</qsrc>
+		<qlic>PD</qlic>
+		<a type="text">leðurblaka (fs)</a>
+		<asrc></asrc>
+		<alic></alic>
+	</qa>
+	<qa>
+		<q type="media">2</q>
+		<qsrc>http://commons.wikimedia.org/wiki/File:Female_pair.jpg</qsrc>
+		<qlic>CC-BY-SA 2.0</qlic>
+		<a type="text">hænsnakjöt (ns) / hænsni (ns) / kjúklingur (ms)</a>
+		<asrc></asrc>
+		<alic></alic>
+	</qa>
+</quiz>
+}}}
+
+===Revision 0.3===
+
+(more info coming later)
+
+===Revision 0.2===
+
+(more info coming later)
+
+===Revision 0.1===
+
+Per revision 0.1, a Yellowcot file is a simple text file. Each odd numbered line is a question; each even-numbered line is an answer. An example file is shown below. The markup defines two question and answer pairs.
+
+{{{
+bat
+leðurblaka (fs)
+chicken
+hænsnakjöt (ns) / hænsni (ns) / kjúklingur (ms)
+}}}
