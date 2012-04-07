@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.4, released 2012-04-05
+	Yellowcot 1.2.5, released 2012-04-07
 
 	Copyleft 2012 Anthony Karam Karam
 
@@ -551,6 +551,13 @@ class YCQuiz : public QWidget {
 			QLabel *theFilePath = qobject_cast<QLabel*>(qLbl);
 			fileIsLoaded->setChecked(false);
 			if (!(theFilePath->text().isNull())) {
+
+				//start QProgressDialog
+				QProgressDialog *pd = new QProgressDialog();
+				pd->setCancelButton(0);
+				pd->show();
+				pd->setValue(0);
+
 				FILE *file;
 				char str[STRLEN], qOrA[STRLEN], croppedStr[STRLEN], qOrAType[STRLEN];
 				int ctr=0;
@@ -624,6 +631,11 @@ class YCQuiz : public QWidget {
 				editTable->setHorizontalHeaderItem(4, new QTableWidgetItem(tr("Answer Source")));
 				editTable->setHorizontalHeaderItem(5, new QTableWidgetItem(tr("Answer Licence")));
 				while (ctr > 0) {
+
+					//update QProgressDialog
+					pd->setValue(100 - ctr * 400 / questionsAndAnswersList->count());
+
+					//update counter
 					ctr -= 2;
 
 					//populate cell 0 (question)
@@ -734,6 +746,9 @@ class YCQuiz : public QWidget {
 
 				//flag the file as loaded
 				fileIsLoaded->setChecked(true);
+
+				//complete QProgressDialog
+				pd->setValue(100);
 			}
 		}
 		void updateButtonContents() {
@@ -908,6 +923,12 @@ class YCQuiz : public QWidget {
 		}
 		void exportToPDF() {
 
+			//start QProgressDialog
+			QProgressDialog *pd = new QProgressDialog();
+			pd->setCancelButton(0);
+			pd->show();
+			pd->setValue(0);
+
 			//get ready
 			char str[STRLEN];
 
@@ -924,6 +945,9 @@ class YCQuiz : public QWidget {
 			//loop through cards, creating an image for each
 			int i;
 			for (i = 0; i < num ; i++) {
+
+				//update QProgressDialog
+				pd->setValue(i * 50. / num);
 
 				//create image for question card
 				if (!QString::compare(questionsAndAnswersList->itemText(i*8), QString("media")))
@@ -956,6 +980,10 @@ class YCQuiz : public QWidget {
 			//loop through cards, placing their images on white sheets
 			int pagenum = 0;
 			for (i = 0; i < num; i++) {
+
+				//update QProgressDialog
+				pd->setValue(50 + i * 50. / num);
+
 				if (!(i%EXPORT_PAGE_ROWS))
 					sysprintf("convert -size %dx%d canvas:white %s/%d_c.png", (int)(EXPORT_PAGE_W * EXPORT_DPI), (int)(EXPORT_PAGE_H * EXPORT_DPI), TMPDIR, pagenum++);
 				sysprintf("convert %s/%d_c.png %s/%d_a.png -geometry +%d+%d -composite %s/%d_c.png", TMPDIR, pagenum - 1, TMPDIR, i, EXPORT_PAGE_BORDER, EXPORT_PAGE_BORDER + card_h * (i%EXPORT_PAGE_ROWS), TMPDIR, pagenum - 1);
@@ -972,7 +1000,8 @@ class YCQuiz : public QWidget {
 			//clean up tmp dir
 			sysprintf("cd %s ; rm *_a.png *_b.png *_c.png white_card.png export.sh", TMPDIR);
 
-			//inform user that export is complete
+			//complete QProgressDialog and inform user that export is complete
+			pd->setValue(100);
 			QMessageBox::information(this, tr("Export"), tr("Flash cards exported to ~/flash_cards.pdf"));
 		}
 };
