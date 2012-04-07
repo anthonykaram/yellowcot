@@ -90,11 +90,11 @@ Per revision 0.4, a Yellowcot file is an uncompressed tarball including an _inde
 <?xml version="1.0"?>
 <quiz>
 	<qa>
-		<q type="image">bat</q>
+		<q type="image">bat.jpg</q>
 		<a type="text">leðurblaka (fs)</a>
 	</qa>
 	<qa>
-		<q type="image">chicken</q>
+		<q type="image">chicken.jpg</q>
 		<a type="text">hænsnakjöt (ns) / hænsni (ns) / kjúklingur (ms)</a>
 	</qa>
 </quiz>
