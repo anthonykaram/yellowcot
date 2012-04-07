@@ -1,6 +1,8 @@
-=Yellowcot file format=
+==Introduction==
 
 Yellowcot introduces a standard, XML-based, open file format for multimedia flash card sets. The latest revision of the file format is 1.0.
+
+==Revisions==
 
 ===Revision 1.0===
 
