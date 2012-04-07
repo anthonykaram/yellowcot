@@ -1,5 +1,5 @@
 /*
-	Yellowcot 1.2.4, released 2012-04-05
+	Yellowcot 1.2.5, released 2012-04-07
 
 	Copyleft 2012 Anthony Karam Karam
 
@@ -19,7 +19,7 @@
 
 #include <stdarg.h>
 
-#define VERSION "1.2.4"
+#define VERSION "1.2.5"
 #define MINWIDTH 500
 #define STRLEN 1000
 #define MINHEIGHT 300
