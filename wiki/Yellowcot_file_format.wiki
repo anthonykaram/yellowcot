@@ -58,7 +58,7 @@ Per revision 0.4, a Yellowcot file is an uncompressed tarball including an _inde
 
 ===Revision 0.3===
 
-(more info coming later)
+Per revision 0.3, a Yellowcot file is an uncompressed tarball including an _index.xml_ and directories to store audio, image, and video files. The _index.xml_ file stores the questions and answers that make up the flash card set. An example _index.xml_ file is shown below. The markup defines two question and answer pairs.
 
 {{{
 <?xml version="1.0"?>
@@ -84,7 +84,7 @@ Per revision 0.4, a Yellowcot file is an uncompressed tarball including an _inde
 
 ===Revision 0.2===
 
-(more info coming later)
+Per revision 0.2, a Yellowcot file is an uncompressed tarball including an _index.xml_ and directories to store audio, image, and video files. The _index.xml_ file stores the questions and answers that make up the flash card set. An example _index.xml_ file is shown below. The markup defines two question and answer pairs.
 
 {{{
 <?xml version="1.0"?>
