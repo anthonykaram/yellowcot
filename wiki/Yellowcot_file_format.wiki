@@ -60,6 +60,28 @@ Per revision 0.4, a Yellowcot file is an uncompressed tarball including an _inde
 
 (more info coming later)
 
+{{{
+<?xml version="1.0"?>
+<quiz>
+	<qa>
+		<q type="image">bat.jpg</q>
+		<qsrc>http://commons.wikimedia.org/wiki/File:Big-eared-townsend-fledermaus.jpg</qsrc>
+		<qlic>PD</qlic>
+		<a type="text">leðurblaka (fs)</a>
+		<asrc></asrc>
+		<alic></alic>
+	</qa>
+	<qa>
+		<q type="image">chicken.jpg</q>
+		<qsrc>http://commons.wikimedia.org/wiki/File:Female_pair.jpg</qsrc>
+		<qlic>CC-BY-SA 2.0</qlic>
+		<a type="text">hænsnakjöt (ns) / hænsni (ns) / kjúklingur (ms)</a>
+		<asrc></asrc>
+		<alic></alic>
+	</qa>
+</quiz>
+}}}
+
 ===Revision 0.2===
 
 (more info coming later)
