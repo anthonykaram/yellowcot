@@ -30,6 +30,8 @@ Per revision 1.0, a Yellowcot file is an uncompressed tarball including an _inde
 </quiz>
 }}}
 
+Supported by Yellowcot versions: 1.2.4 - 1.2.5
+
 Example (revision 1.0) Yellowcot file: [http://yellowcot.googlecode.com/files/Chemical_Elements_1.0.yc Chemical_Elements_1.0.yc]
 
 ===Revision 0.4===
@@ -57,6 +59,8 @@ Per revision 0.4, a Yellowcot file is an uncompressed tarball including an _inde
 	</qa>
 </quiz>
 }}}
+
+Supported by Yellowcot versions: 1.2.0 - 1.2.3
 
 Example (revision 0.4) Yellowcot file: [http://yellowcot.googlecode.com/files/Chemical_Elements_0.4.yc Chemical_Elements_0.4.yc]
 
@@ -86,6 +90,8 @@ Per revision 0.3, a Yellowcot file is an uncompressed tarball including an _inde
 </quiz>
 }}}
 
+Supported by Yellowcot versions: 1.1.15 - 1.1.19
+
 Example (revision 0.3) Yellowcot file: [http://yellowcot.googlecode.com/files/Chemical_Elements_0.3.yc Chemical_Elements_0.3.yc]
 
 ===Revision 0.2===
@@ -106,6 +112,8 @@ Per revision 0.2, a Yellowcot file is an uncompressed tarball including an _inde
 </quiz>
 }}}
 
+Supported by Yellowcot versions: 1.1.0 - 1.1.14
+
 Example (revision 0.2) Yellowcot file: [http://yellowcot.googlecode.com/files/Chemical_Elements_0.2.yc Chemical_Elements_0.2.yc]
 
 ===Revision 0.1===
@@ -118,5 +126,7 @@ leðurblaka (fs)
 chicken
 hænsnakjöt (ns) / hænsni (ns) / kjúklingur (ms)
 }}}
+
+Supported by Yellowcot versions: 1.0.0 - 1.0.1
 
 Example (revision 0.1) Yellowcot file: [http://yellowcot.googlecode.com/files/Chemical_Elements_0.1.yc Chemical_Elements_0.1.yc]
