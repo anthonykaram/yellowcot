@@ -90,7 +90,7 @@ Per revision 0.3, a Yellowcot file is an uncompressed tarball including an _inde
 </quiz>
 }}}
 
-Supported by Yellowcot versions: 1.1.15 - 1.1.19
+Supported by Yellowcot versions: 1.1.15 - 1.1.21
 
 Example (revision 0.3) Yellowcot file: [http://yellowcot.googlecode.com/files/Chemical_Elements_0.3.yc Chemical_Elements_0.3.yc]
 
