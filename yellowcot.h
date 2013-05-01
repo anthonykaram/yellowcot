@@ -1,7 +1,7 @@
 /*
-	Yellowcot 1.2.5, released 2012-04-07
+	Yellowcot 1.2.6, released 2013-03-23
 
-	Copyleft 2012 Anthony Karam Karam
+	Copyleft 2013 Anthony Karam Karam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
